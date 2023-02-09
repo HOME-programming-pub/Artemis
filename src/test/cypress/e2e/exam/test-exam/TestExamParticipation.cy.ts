@@ -14,6 +14,7 @@ const users = artemis.users;
 const admin = users.getAdmin();
 const studentOne = users.getStudentOne();
 const studentTwo = users.getStudentTwo();
+const studentThree = users.getStudentThree();
 
 // Requests
 const courseManagementRequests = artemis.requests.courseManagement;
@@ -21,6 +22,7 @@ const courseManagementRequests = artemis.requests.courseManagement;
 // PageObjects
 const examParticipation = artemis.pageobjects.exam.participation;
 const exerciseGroupCreation = artemis.pageobjects.exam.exerciseGroupCreation;
+const onlineEditor = artemis.pageobjects.exercise.programming.editor;
 
 // Common primitives
 const examTitle = 'test-exam' + generateUUID();
@@ -91,6 +93,30 @@ describe('Test exam participation', () => {
         }
 
         examParticipation.handInEarly();
+    });
+
+    it('Checks programming exercise score visibility', () => {
+        let programmingExerciseID = 0;
+        let quizExerciseID = 0;
+        examParticipation.startParticipation(studentThree, course, exam);
+        for (let j = 0; j < exerciseArray.length; j++) {
+            const exercise = exerciseArray[j];
+            if (exercise.type == EXERCISE_TYPE.Programming) {
+                exercise.additionalData!.expectedScore = 0;
+                examParticipation.makeSubmission(exercise.id, exercise.type, exercise.additionalData);
+                onlineEditor.getResultScoreFromExercise(exercise.id).contains('Build Successful').and('be.visible');
+                programmingExerciseID = exercise.id;
+            } else if (exercise.type == EXERCISE_TYPE.Quiz) {
+                examParticipation.makeSubmission(exercise.id, exercise.type, exercise.additionalData);
+                quizExerciseID = exercise.id;
+            } else {
+                continue;
+            }
+        }
+
+        examParticipation.handInEarly();
+        cy.get(`#exercise-${programmingExerciseID} #result-score`).contains('100%, Build Successful').and('be.visible');
+        cy.get(`#exercise-${quizExerciseID} #result-score`).contains('100%, 1 point').and('be.visible');
     });
 
     after(() => {
