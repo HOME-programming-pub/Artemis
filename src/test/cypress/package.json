@@ -13,6 +13,7 @@
         "@types/node": "18.13.0",
         "cypress": "12.6.0",
         "cypress-file-upload": "5.0.8",
+        "cypress-parallel": "^0.12.0",
         "cypress-wait-until": "1.7.2",
         "typescript": "4.9.5",
         "uuid": "9.0.0",
@@ -21,6 +22,7 @@
     "scripts": {
         "cypress:open": "cypress open",
         "cypress:run": "cypress run --browser=chrome",
+        "cypress:parallel": "cypress-parallel -s cypress:run -t 2 -d 'e2e/*' -a '\"--config retries=2\"'",
         "detect:flakies": "coverage-git-compare bamboo $BAMBOO_PLAN_KEY $BAMBOO_BUILD_NUMBER $BAMBOO_TOKEN",
         "update": "npm-upgrade"
     }
