@@ -17,5 +17,4 @@ services:
             BAMBOO_BUILD_NUMBER: "${bamboo_buildNumber}"
             BAMBOO_TOKEN: "${bamboo_BAMBOO_PERSONAL_SECRET}"
             CYPRESS_COLLECT_COVERAGE: "true"
-        # Wait up to 5 minutes until Artemis has booted
         command: sh -c "cd /app/artemis/src/test/cypress && chmod 777 /root && npm ci && npm run cypress:run || npm run detect:flakies"
