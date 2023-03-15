@@ -117,8 +117,9 @@ services:
             CYPRESS_editorGroupName: "artemis-e2etest-editors"
             CYPRESS_instructorGroupName: "artemis-e2etest-instructors"
         command: sh -c "cd /app/artemis/src/test/cypress && chmod 777 /root && npm ci && npm run cypress:run -- --config retries=2"
+        # checkout src/test/cypress into artemis-cypress to bind mount this separately for more robustness in case of errors
         volumes:
-            - ../../../../:/app/artemis
+            - ../../../../artemis-cypress:/app/artemis
         networks:
             - artemis
 
