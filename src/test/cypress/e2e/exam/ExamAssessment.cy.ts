@@ -22,21 +22,21 @@ import { admin, instructor, studentOne, tutor } from '../../support/users';
 import { EXERCISE_TYPE } from '../../support/constants';
 import { Exercise } from '../../support/pageobjects/exam/ExamParticipation';
 
-let exam: Exam;
-let course: Course;
-
 // This is a workaround for uncaught athene errors. When opening a text submission athene throws an uncaught exception, which fails the test
 Cypress.on('uncaught:exception', () => {
     return false;
 });
 
+let exam: Exam;
+
 describe('Exam assessment', () => {
+    let course: Course;
     let examEnd: Dayjs;
     let programmingAssessmentSuccessful = false;
     let modelingAssessmentSuccessful = false;
     let textAssessmentSuccessful = false;
 
-    before('Create a course', () => {
+    before('Create course', () => {
         cy.login(admin);
         courseManagementRequest.createCourse(true).then((response) => {
             course = convertCourseAfterMultiPart(response);
@@ -49,7 +49,7 @@ describe('Exam assessment', () => {
     describe('Programming exercise assessment', () => {
         before('Prepare exam', () => {
             examEnd = dayjs().add(2.5, 'minutes');
-            prepareExam(examEnd, EXERCISE_TYPE.Programming);
+            prepareExam(course, examEnd, EXERCISE_TYPE.Programming);
         });
 
         it('Assess a programming exercise submission (MANUAL)', () => {
@@ -73,7 +73,7 @@ describe('Exam assessment', () => {
     describe('Modeling exercise assessment', () => {
         before('Prepare exam', () => {
             examEnd = dayjs().add(30, 'seconds');
-            prepareExam(examEnd, EXERCISE_TYPE.Modeling);
+            prepareExam(course, examEnd, EXERCISE_TYPE.Modeling);
         });
 
         it('Assess a modeling exercise submission', () => {
@@ -104,7 +104,7 @@ describe('Exam assessment', () => {
     describe('Text exercise assessment', () => {
         before('Prepare exam', () => {
             examEnd = dayjs().add(30, 'seconds');
-            prepareExam(examEnd, EXERCISE_TYPE.Text);
+            prepareExam(course, examEnd, EXERCISE_TYPE.Text);
         });
 
         it('Assess a text exercise submission', () => {
@@ -133,7 +133,7 @@ describe('Exam assessment', () => {
         before('Prepare exam', () => {
             examEnd = dayjs().add(25, 'seconds');
             resultDate = examEnd.add(5, 'seconds');
-            prepareExam(examEnd, EXERCISE_TYPE.Quiz);
+            prepareExam(course, examEnd, EXERCISE_TYPE.Quiz);
         });
 
         it('Assesses quiz automatically', () => {
@@ -143,7 +143,7 @@ describe('Exam assessment', () => {
             cy.login(admin, `/course-management/${course.id}/exams/${exam.id}/assessment-dashboard`);
             courseAssessment.clickEvaluateQuizzes().its('response.statusCode').should('eq', 200);
             if (dayjs().isBefore(resultDate)) {
-                cy.wait(examEnd.diff(dayjs(), 'ms'));
+                cy.wait(resultDate.diff(dayjs(), 'ms'));
             }
             cy.login(studentOne, '/courses/' + course.id + '/exams/' + exam.id);
             // Sometimes the feedback fails to load properly on the first load...
@@ -161,7 +161,7 @@ describe('Exam assessment', () => {
     });
 });
 
-function prepareExam(end: dayjs.Dayjs, exerciseType: EXERCISE_TYPE) {
+function prepareExam(course: Course, end: dayjs.Dayjs, exerciseType: EXERCISE_TYPE) {
     cy.login(admin);
     const resultDate = end.add(1, 'second');
     const examContent = new ExamBuilder(course)

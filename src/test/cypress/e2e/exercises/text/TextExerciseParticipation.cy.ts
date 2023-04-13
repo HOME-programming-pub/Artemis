@@ -9,7 +9,7 @@ describe('Text exercise participation', () => {
     let course: Course;
     let exercise: TextExercise;
 
-    before(() => {
+    before('Create course', () => {
         cy.login(admin);
         courseManagementRequest.createCourse().then((response) => {
             course = convertCourseAfterMultiPart(response);
@@ -20,7 +20,7 @@ describe('Text exercise participation', () => {
         });
     });
 
-    it('Creates a text exercise in the UI', () => {
+    it('Text exercise participation', () => {
         cy.login(studentOne, `/courses/${course.id}/exercises`);
         courseOverview.startExercise(exercise.id!);
         courseOverview.openRunningExercise(exercise.id!);
@@ -44,7 +44,7 @@ describe('Text exercise participation', () => {
         });
     });
 
-    after(() => {
+    after('Delete course', () => {
         if (course) {
             cy.login(admin);
             courseManagementRequest.deleteCourse(course.id!);

@@ -8,23 +8,19 @@ import { courseManagementRequest, modelingExerciseAssessment, modelingExerciseCr
 import { admin, instructor, studentOne } from '../../../support/users';
 
 // Common primitives
-let course: Course;
-let modelingExercise: ModelingExercise;
 const modelingExerciseTitle = 'Cypress modeling exercise';
 
-describe('Modeling Exercise Management Spec', () => {
-    before('Create a course', () => {
+describe('Modeling Exercise Management', () => {
+    let course: Course;
+    let modelingExercise: ModelingExercise;
+
+    before('Create course', () => {
         cy.login(admin);
         courseManagementRequest.createCourse().then((response: Cypress.Response<Course>) => {
             course = convertCourseAfterMultiPart(response);
             courseManagementRequest.addInstructorToCourse(course, instructor);
             courseManagementRequest.addStudentToCourse(course, studentOne);
         });
-    });
-
-    after('Delete the test course', () => {
-        cy.login(admin);
-        courseManagementRequest.deleteCourse(course.id!);
     });
 
     afterEach('Delete modeling exercise', () => {
@@ -107,7 +103,7 @@ describe('Modeling Exercise Management Spec', () => {
     });
 
     describe('Modeling Exercise Release', () => {
-        beforeEach('Login intructor', () => {
+        beforeEach('Login as instructor', () => {
             cy.login(instructor);
         });
 
@@ -127,5 +123,12 @@ describe('Modeling Exercise Management Spec', () => {
             cy.login(studentOne, '/courses');
             cy.visit('/courses/' + course.id + '/exercises/' + modelingExercise.id);
         });
+    });
+
+    after('Delete course', () => {
+        if (course) {
+            cy.login(admin);
+            courseManagementRequest.deleteCourse(course.id!);
+        }
     });
 });

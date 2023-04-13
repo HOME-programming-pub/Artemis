@@ -8,9 +8,8 @@ import { admin, instructor } from '../../support/users';
 
 describe('Lecture management', () => {
     let course: Course;
-    let lecture: Lecture | undefined;
 
-    before(() => {
+    before('Create course', () => {
         cy.login(admin);
         courseManagementRequest.createCourse().then((response) => {
             course = convertCourseAfterMultiPart(response);
@@ -18,21 +17,8 @@ describe('Lecture management', () => {
         });
     });
 
-    after(() => {
-        if (course) {
-            cy.login(admin);
-            courseManagementRequest.deleteCourse(course.id!);
-        }
-    });
-
-    afterEach('Delete lecture', () => {
-        if (lecture) {
-            courseManagementRequest.deleteLecture(lecture.id!);
-        }
-    });
-
     it('creates a lecture', () => {
-        const lectureTitle = 'exam' + generateUUID();
+        const lectureTitle = 'lecture' + generateUUID();
         cy.login(instructor, '/course-management/' + course.id);
         cy.get('#lectures').click();
         lectureManagement.clickCreateLecture();
@@ -43,12 +29,13 @@ describe('Lecture management', () => {
         lectureCreation.setStartDate(dayjs());
         lectureCreation.setEndDate(dayjs().add(1, 'hour'));
         lectureCreation.save().then((lectureResponse) => {
-            lecture = lectureResponse.response!.body;
             expect(lectureResponse.response!.statusCode).to.eq(201);
         });
     });
 
     describe('Handle existing lecture', () => {
+        let lecture: Lecture;
+
         beforeEach('Create a lecture', () => {
             cy.login(instructor, '/course-management/' + course.id + '/lectures');
             courseManagementRequest.createLecture(course).then((lectureResponse) => {
@@ -57,15 +44,14 @@ describe('Lecture management', () => {
         });
 
         it('Deletes an existing lecture', () => {
-            lectureManagement.deleteLecture(lecture!.title!, 0).then((resp) => {
+            lectureManagement.deleteLecture(lecture).then((resp) => {
                 expect(resp.response!.statusCode).to.eq(200);
-                lectureManagement.getLectureContainer().children().should('have.length', 0);
-                lecture = undefined;
+                lectureManagement.getLecture(lecture.id!).should('not.exist');
             });
         });
 
         it('Adds a text unit to the lecture', () => {
-            lectureManagement.openUnitsPage(0);
+            lectureManagement.openUnitsPage(lecture.id!);
             cy.fixture('loremIpsum.txt').then((text) => {
                 lectureManagement.addTextUnit('Text unit', text);
             });
@@ -75,10 +61,17 @@ describe('Lecture management', () => {
         it('Adds a exercise unit to the lecture', () => {
             courseManagementRequest.createModelingExercise({ course }).then((model) => {
                 const exercise = model.body;
-                lectureManagement.openUnitsPage(0);
+                lectureManagement.openUnitsPage(lecture.id!);
                 lectureManagement.addExerciseUnit(exercise.id!);
                 cy.contains(exercise.title!);
             });
         });
+    });
+
+    after('Delete course', () => {
+        if (course) {
+            cy.login(admin);
+            courseManagementRequest.deleteCourse(course.id!);
+        }
     });
 });

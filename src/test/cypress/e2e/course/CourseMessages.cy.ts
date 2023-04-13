@@ -6,13 +6,10 @@ import { convertCourseAfterMultiPart } from '../../support/requests/CourseManage
 import { admin, instructor, studentOne, studentTwo, tutor, users } from '../../support/users';
 import { generateUUID } from '../../support/utils';
 
-// Common primitives
-let courseName: string;
-let courseShortName: string;
-
 describe('Course messages', () => {
     let course: Course;
-    let courseId: number;
+    let courseName: string;
+    let courseShortName: string;
 
     before('Create course', () => {
         cy.login(admin);
@@ -21,7 +18,6 @@ describe('Course messages', () => {
         courseShortName = 'cypress' + uid;
         courseManagementRequest.createCourse(false, courseName, courseShortName).then((response) => {
             course = convertCourseAfterMultiPart(response);
-            courseId = course.id!;
             courseManagementRequest.addInstructorToCourse(course, instructor);
             courseManagementRequest.addTutorToCourse(course, tutor);
             courseManagementRequest.addStudentToCourse(course, studentOne);
@@ -364,10 +360,10 @@ describe('Course messages', () => {
         });
     });
 
-    after('Delete Course', () => {
-        cy.login(admin);
-        if (courseId) {
-            courseManagementRequest.deleteCourse(courseId).its('status').should('eq', 200);
+    after('Delete course', () => {
+        if (course) {
+            cy.login(admin);
+            courseManagementRequest.deleteCourse(course.id!);
         }
     });
 });

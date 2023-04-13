@@ -7,13 +7,10 @@ import { admin, instructor, studentOne, studentThree, studentTwo } from '../../s
 import { generateUUID, titleCaseWord } from '../../support/utils';
 import { Lecture } from 'app/entities/lecture.model';
 
-// Common primitives
-let courseName: string;
-let courseShortName: string;
-
 describe('Course communication', () => {
     let course: Course;
-    let courseId: number;
+    let courseName: string;
+    let courseShortName: string;
 
     before('Create course', () => {
         cy.login(admin);
@@ -22,7 +19,6 @@ describe('Course communication', () => {
         courseShortName = 'cypress' + uid;
         courseManagementRequest.createCourse(false, courseName, courseShortName).then((response) => {
             course = convertCourseAfterMultiPart(response);
-            courseId = course.id!;
             courseManagementRequest.addInstructorToCourse(course, instructor);
             courseManagementRequest.addStudentToCourse(course, studentOne);
             courseManagementRequest.addStudentToCourse(course, studentTwo);
@@ -468,7 +464,7 @@ describe('Course communication', () => {
     after('Delete Course', () => {
         cy.login(admin);
         if (courseId) {
-            courseManagementRequest.deleteCourse(courseId).its('status').should('eq', 200);
+            courseManagementRequest.deleteCourse(course.id!);
         }
     });
 });

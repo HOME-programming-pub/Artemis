@@ -13,10 +13,10 @@ import { admin, studentOne, studentThree, studentTwo } from '../../support/users
 // Common primitives
 const textFixture = 'loremIpsum.txt';
 const textFixtureAlternative = 'loremIpsum-alternative.txt';
-let exerciseArray: Array<Exercise> = [];
 
 describe('Exam participation', () => {
     let course: Course;
+    let exerciseArray: Array<Exercise> = [];
 
     before('Create course', () => {
         cy.login(admin);
