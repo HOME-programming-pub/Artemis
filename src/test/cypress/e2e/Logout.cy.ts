@@ -1,6 +1,6 @@
 import { Course } from '../../../main/webapp/app/entities/course.model';
 import { ModelingExercise } from '../../../main/webapp/app/entities/modeling-exercise.model';
-import { courseManagementRequest, courseOverview, modelingExerciseEditor } from '../support/artemis';
+import { courseManagementRequest, courseOverview, modelingExerciseEditor, navigationBar } from '../support/artemis';
 import { convertCourseAfterMultiPart } from '../support/requests/CourseManagementRequests';
 import { admin, studentOne, studentTwo } from '../support/users';
 
@@ -50,11 +50,9 @@ describe('Logout tests', () => {
 const startExerciseAndMakeChanges = (course: Course, modelingExercise: ModelingExercise) => {
     const exerciseID = modelingExercise.id!;
     cy.visit(`/courses/${course.id}/exercises`);
-    cy.reloadUntilFound('#start-exercise-' + exerciseID);
     courseOverview.startExercise(exerciseID);
-    cy.reloadUntilFound('#open-exercise-' + exerciseID);
     courseOverview.openRunningExercise(exerciseID);
     modelingExerciseEditor.addComponentToModel(exerciseID, 1);
     modelingExerciseEditor.addComponentToModel(exerciseID, 2);
-    cy.get('#account-menu').click().get('#logout').click();
+    navigationBar.logout();
 };

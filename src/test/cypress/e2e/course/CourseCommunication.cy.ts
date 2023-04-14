@@ -461,9 +461,9 @@ describe('Course communication', () => {
         });
     });
 
-    after('Delete Course', () => {
-        cy.login(admin);
-        if (courseId) {
+    after('Delete course', () => {
+        if (course) {
+            cy.login(admin);
             courseManagementRequest.deleteCourse(course.id!);
         }
     });

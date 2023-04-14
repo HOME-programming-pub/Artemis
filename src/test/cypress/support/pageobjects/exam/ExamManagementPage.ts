@@ -69,6 +69,10 @@ export class ExamManagementPage {
         cy.get(`#testrun-button`).click();
     }
 
+    clickEdit() {
+        cy.get('#editButton').click();
+    }
+
     /**
      * helper methods to get information of course
      * */

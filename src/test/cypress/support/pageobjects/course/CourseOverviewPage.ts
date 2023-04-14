@@ -6,17 +6,28 @@ import { BASE_API, GET } from '../../constants';
 export class CourseOverviewPage {
     readonly participationRequestId = 'participateInExerciseQuery';
 
-    startExercise(exerciseId: number) {
-        cy.get('#start-exercise-' + exerciseId).click();
+    search(term: string): void {
+        cy.get('#exercise-search-input').type(term);
+        cy.get('#exercise-search-button').click();
     }
 
-    openRunningExercise(exerciseId: number) {
-        cy.get('#open-exercise-' + exerciseId).click();
+    startExercise(exerciseID: number) {
+        cy.reloadUntilFound(`#start-exercise-${exerciseID}`);
+        cy.get(`#start-exercise-${exerciseID}`).click();
     }
 
-    openRunningProgrammingExercise(exerciseId: number) {
+    getExercise(exerciseID: number) {
+        return cy.get(`#exercise-card-${exerciseID}`);
+    }
+
+    openRunningExercise(exerciseID: number) {
+        cy.reloadUntilFound(`#open-exercise-${exerciseID}`);
+        cy.get('#open-exercise-' + exerciseID).click();
+    }
+
+    openRunningProgrammingExercise(exerciseID: number) {
         cy.intercept(GET, BASE_API + 'programming-exercise-participations/*/student-participation-with-latest-result-and-feedbacks').as('initialQuery');
-        this.openRunningExercise(exerciseId);
+        this.openRunningExercise(exerciseID);
         cy.wait('@initialQuery');
     }
 

@@ -101,6 +101,18 @@ export class ExamParticipation {
         cy.get('#exam-title').contains(title);
     }
 
+    checkExamFinishedTitle(title: string) {
+        cy.get('#exam-finished-title').contains(title, { timeout: 40000 });
+    }
+
+    checkExamFullnameInputExists() {
+        cy.get('#fullname', { timeout: 20000 }).should('exist');
+    }
+
+    checkYourFullname(name: string) {
+        cy.get('#your-name', { timeout: 20000 }).contains(name);
+    }
+
     handInEarly() {
         examNavigation.handInEarly();
         examStartEnd.finishExam().then((request: Interception) => {

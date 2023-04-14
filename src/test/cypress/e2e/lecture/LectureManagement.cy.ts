@@ -17,10 +17,10 @@ describe('Lecture management', () => {
         });
     });
 
-    it('creates a lecture', () => {
+    it('Creates a lecture', () => {
         const lectureTitle = 'lecture' + generateUUID();
         cy.login(instructor, '/course-management/' + course.id);
-        cy.get('#lectures').click();
+        lectureManagement.getLectures().click();
         lectureManagement.clickCreateLecture();
         lectureCreation.setTitle(lectureTitle);
         cy.fixture('loremIpsum.txt').then((text) => {

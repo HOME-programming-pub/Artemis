@@ -48,7 +48,7 @@ describe('Exam assessment', () => {
     // For some reason the typing of cypress gets slower the longer the test runs, so we test the programming exercise first
     describe('Programming exercise assessment', () => {
         before('Prepare exam', () => {
-            examEnd = dayjs().add(2.5, 'minutes');
+            examEnd = dayjs().add(3, 'minutes');
             prepareExam(course, examEnd, EXERCISE_TYPE.Programming);
         });
 
@@ -103,7 +103,7 @@ describe('Exam assessment', () => {
 
     describe('Text exercise assessment', () => {
         before('Prepare exam', () => {
-            examEnd = dayjs().add(30, 'seconds');
+            examEnd = dayjs().add(40, 'seconds');
             prepareExam(course, examEnd, EXERCISE_TYPE.Text);
         });
 
@@ -131,7 +131,7 @@ describe('Exam assessment', () => {
         let resultDate: Dayjs;
 
         before('Prepare exam', () => {
-            examEnd = dayjs().add(25, 'seconds');
+            examEnd = dayjs().add(30, 'seconds');
             resultDate = examEnd.add(5, 'seconds');
             prepareExam(course, examEnd, EXERCISE_TYPE.Quiz);
         });
@@ -143,12 +143,9 @@ describe('Exam assessment', () => {
             cy.login(admin, `/course-management/${course.id}/exams/${exam.id}/assessment-dashboard`);
             courseAssessment.clickEvaluateQuizzes().its('response.statusCode').should('eq', 200);
             if (dayjs().isBefore(resultDate)) {
-                cy.wait(resultDate.diff(dayjs(), 'ms'));
+                cy.wait(resultDate.diff(dayjs(), 'ms') + 10000);
             }
             cy.login(studentOne, '/courses/' + course.id + '/exams/' + exam.id);
-            // Sometimes the feedback fails to load properly on the first load...
-            const resultSelector = '#result-score';
-            cy.reloadUntilFound(resultSelector);
             programmingExerciseEditor.getResultScore().should('contain.text', '50%, 5 points').and('be.visible');
         });
     });
@@ -210,7 +207,7 @@ function startAssessing() {
     courseAssessment.clickExerciseDashboardButton();
     exerciseAssessment.clickHaveReadInstructionsButton();
     exerciseAssessment.clickStartNewAssessment();
-    cy.get('#assessmentLockedCurrentUser').should('be.visible');
+    exerciseAssessment.getLockedMessage();
 }
 
 function handleComplaint(course: Course, exam: Exam, reject: boolean, exerciseType: EXERCISE_TYPE) {
