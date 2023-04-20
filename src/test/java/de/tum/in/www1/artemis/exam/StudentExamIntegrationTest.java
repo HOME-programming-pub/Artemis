@@ -1950,8 +1950,12 @@ class StudentExamIntegrationTest extends AbstractSpringIntegrationBambooBitbucke
         database.changeUser(student.getLogin());
 
         var studentExam = studentExamRepository.findWithExercisesByUserIdAndExamId(student.getId(), finalExam.getId());
-        log.debug("Found for student {} {} and exam {}", student.getId(), student.getLogin(), finalExam.getId());
-        assertThat(studentExam).as("Found too many student exams" + studentExam).isNotNull();
+        if (studentExam.isPresent()) {
+            log.debug("Found for student {} {} and exam {}", student.getId(), student.getLogin(), finalExam.getId());
+        }
+        else {
+            log.debug("Not Found for student {} {} and exam {}", student.getId(), student.getLogin(), finalExam.getId());
+        }
 
         var studentExamGradeInfoFromServer = request.get("/api/courses/" + finalExam.getCourse().getId() + "/exams/" + finalExam.getId() + "/student-exams/grade-summary",
                 HttpStatus.OK, StudentExamWithGradeDTO.class);
