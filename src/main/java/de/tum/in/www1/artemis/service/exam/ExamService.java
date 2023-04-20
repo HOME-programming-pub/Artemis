@@ -337,6 +337,14 @@ public class ExamService {
         if (studentIds.size() == 1) {  // Optimize single student case by filtering in the database.
             Long studentId = studentIds.iterator().next();
             User targetUser = userRepository.findByIdWithGroupsAndAuthoritiesElseThrow(studentId);
+
+            List<StudentExam> studentExams = studentExamRepository.findAllWithExercisesByUserIdAndExamId(targetUser.getId(), examId);
+            log.debug("studentExams.size: " + studentExams.size());
+            for (StudentExam studentExam : studentExams) {
+                log.debug("studentExam.id: " + studentExam.getId() + ", studentExam.user.id: " + studentExam.getUser().getId() + ", studentExam.exam.id: "
+                        + studentExam.getExam().getId());
+            }
+
             StudentExam studentExam = studentExamRepository.findWithExercisesByUserIdAndExamId(targetUser.getId(), examId)
                     .orElseThrow(() -> new EntityNotFoundException("No student exam found for examId " + examId + " and userId " + studentId));
 

@@ -1949,13 +1949,9 @@ class StudentExamIntegrationTest extends AbstractSpringIntegrationBambooBitbucke
         // users tries to access exam summary after results are published
         database.changeUser(student.getLogin());
 
-        var studentExam = studentExamRepository.findWithExercisesByUserIdAndExamId(student.getId(), finalExam.getId());
-        if (studentExam.isPresent()) {
-            log.debug("Found for student {} {} and exam {}", student.getId(), student.getLogin(), finalExam.getId());
-        }
-        else {
-            log.debug("Not Found for student {} {} and exam {}", student.getId(), student.getLogin(), finalExam.getId());
-        }
+        var studentExams = studentExamRepository.findAllWithExercisesByUserIdAndExamId(student.getId(), finalExam.getId());
+        log.debug("Found {} student exams for student {} {} and exam {}", studentExams.size(), student.getId(), student.getLogin(), finalExam.getId());
+        assertThat(studentExams).as("Found too many student exams" + studentExams).hasSize(1);
 
         var studentExamGradeInfoFromServer = request.get("/api/courses/" + finalExam.getCourse().getId() + "/exams/" + finalExam.getId() + "/student-exams/grade-summary",
                 HttpStatus.OK, StudentExamWithGradeDTO.class);
