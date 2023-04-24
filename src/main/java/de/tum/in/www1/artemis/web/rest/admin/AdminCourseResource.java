@@ -35,7 +35,6 @@ public class AdminCourseResource {
 
     private final Logger log = LoggerFactory.getLogger(AdminCourseResource.class);
 
-
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
@@ -108,14 +107,14 @@ public class AdminCourseResource {
             course.setCourseIcon(pathString);
         }
 
-        Course result = courseRepository.save(course);
+        Course createdCourse = courseRepository.save(course);
 
-        this.createChannel(result, "tech-support", false);
-        this.createChannel(result, "organization", false);
-        this.createChannel(result, "random", false);
-        this.createChannel(result, "announcement", true);
+        this.createDefaultChannel(createdCourse, "tech-support", false);
+        this.createDefaultChannel(createdCourse, "organization", false);
+        this.createDefaultChannel(createdCourse, "random", false);
+        this.createDefaultChannel(createdCourse, "announcement", true);
 
-        return ResponseEntity.created(new URI("/api/courses/" + result.getId())).body(result);
+        return ResponseEntity.created(new URI("/api/courses/" + createdCourse.getId())).body(createdCourse);
     }
 
     /**
@@ -138,13 +137,21 @@ public class AdminCourseResource {
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, Course.ENTITY_NAME, course.getTitle())).build();
     }
 
-    private void createChannel(Course course, String name, Boolean isAnnouncement) {
-        var channelToCreate = new Channel();
+    /**
+     * Creates a default channel with the given name and adds all students, tutors and instructors as participants.
+     *
+     * @param course         the course in which the channel shall be created
+     * @param name           the name of the channel to create
+     * @param isAnnouncement whether the channel is an announcement channel
+     */
+    private void createDefaultChannel(Course course, String name, Boolean isAnnouncement) {
+        Channel channelToCreate = new Channel();
         channelToCreate.setName(name);
         channelToCreate.setIsPublic(true);
         channelToCreate.setIsAnnouncementChannel(isAnnouncement);
         channelToCreate.setIsArchived(false);
         channelToCreate.setDescription(null);
-        channelService.createChannel(course, channelToCreate, Optional.of(userRepository.getUserWithGroupsAndAuthorities()));
+        Channel createdChannel = channelService.createChannel(course, channelToCreate, Optional.of(userRepository.getUserWithGroupsAndAuthorities()));
+        channelService.registerUsersToChannel(true, true, true, List.of(), course, createdChannel);
     }
 }
