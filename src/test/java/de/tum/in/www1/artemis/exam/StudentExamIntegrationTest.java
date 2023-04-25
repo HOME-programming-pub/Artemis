@@ -196,6 +196,9 @@ class StudentExamIntegrationTest extends AbstractSpringIntegrationBambooBitbucke
         for (var repo : studentRepos) {
             repo.resetLocalRepo();
         }
+
+        examSessionRepository.deleteAll();
+        studentExamRepository.deleteAll();
     }
 
     @Test
