@@ -154,7 +154,7 @@ public class GitLabCIService extends AbstractContinuousIntegrationService {
             // TODO: Use a token that is only valid for the test repository for each programming exercise
             updateVariable(repositoryPath, VARIABLE_TEST_GIT_TOKEN, gitlabToken);
             updateVariable(repositoryPath, VARIABLE_TEST_GIT_USER, gitlabUser);
-            updateVariable(repositoryPath, VARIABLE_TEST_RESULTS_DIR_NAME, "target/surefire-reports");
+            updateVariable(repositoryPath, VARIABLE_TEST_RESULTS_DIR_NAME, "target/reports");
         }
         catch (GitLabApiException e) {
             log.error("Error creating variable for " + repositoryURL.toString() + " The variables may already have been created.", e);

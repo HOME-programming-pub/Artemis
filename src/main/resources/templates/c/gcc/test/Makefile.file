@@ -1,14 +1,14 @@
 .PHONY: all run
 
-all: helloWorld
+all: test
 
 #############################################################
 # DON'T change the variable names of INCLUDEDIRS and SOURCE
 #############################################################
 # A list of include directories
-INCLUDEDIRS =
+INCLUDEDIRS = ../exercise ../solution
 # A list of source files
-SOURCE = helloWorld.c
+SOURCE = test.c ../exercise/*.c ../solution/*.c
 
 ifeq ($(origin CC),default)
 CC = gcc
@@ -30,7 +30,7 @@ WFLAGS = -Wall -Wextra -Wpedantic -g
 # -std=c11              Set C standard
 # -O0:			        Do not optimize the program
 # $(WFLAGS)             Warning flags
-helloWorld: FORCE
+test: FORCE
 	$(CC) $(SOURCE) $(INCLUDEDIRS:%=-I%) -o $@.out -std=c11 -O0 $(WFLAGS)
 
 # Compile with address sanitizer enabled
@@ -91,7 +91,7 @@ staticAnalysis: FORCE
 
 # Execute the compiled program
 run:
-	./helloWorld.out
+	./test.out
 
 # Make sure we always rebuild
 # Required for the tester

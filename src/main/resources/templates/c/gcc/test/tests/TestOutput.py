@@ -6,7 +6,7 @@ from testUtils.Utils import printTester, studSaveStrComp
 
 
 class TestOutput(AbstractProgramTest):
-    def __init__(self, makefileLocation: str, requirements: List[str] = None, name: str = "TestOutput", executable: str = "helloWorld.out"):
+    def __init__(self, makefileLocation: str, requirements: List[str] = None, name: str = "TestOutput", executable: str = "exercise.out"):
         super(TestOutput, self).__init__(name, makefileLocation, executable, requirements, timeoutSec=10)
 
     def _run(self):

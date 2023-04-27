@@ -51,11 +51,13 @@ public class GitLabCIBuildPlanService {
     }
 
     private static Optional<String> getProjectTypeName(final ProgrammingExercise programmingExercise) {
-        if (ProgrammingLanguage.JAVA.equals(programmingExercise.getProgrammingLanguage())) {
-            return Optional.of("maven");
-        }
-        else {
-            return Optional.empty();
+        switch(programmingExercise.getProgrammingLanguage()){
+            case JAVA: 
+                return Optional.of("maven");
+            case C: 
+                return Optional.of("gcc");
+            default:
+                return Optional.empty();
         }
     }
 

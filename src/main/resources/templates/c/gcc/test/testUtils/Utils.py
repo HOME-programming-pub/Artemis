@@ -127,9 +127,9 @@ def __getCurSeconds():
 
 def __getCurDateTimeStr():
     """
-    Returns the current date and time string (e.g. 11.10.2019_17:02:33)
+    Returns the current date and time string (e.g. 2019-10-11T17:02:33Z)
     """
-    return datetime.now().strftime("%d.%m.%Y_%H:%M:%S")
+    return datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def printTester(text: str, addToCache: bool = True):
@@ -138,7 +138,7 @@ def printTester(text: str, addToCache: bool = True):
     Should be used instead of print() to make it easier for students
     to determine what came from the tester and what from their program.
     """
-    msg: str = f"[{__getCurSeconds()}][T]: {text}"
+    msg: str = f"[{__getCurDateTimeStr()}] [T]: {text}"
     __printStdout(msg)
     if addToCache:
         testerOutputCache.append(msg)
@@ -150,7 +150,7 @@ def printProg(text: str, addToCache: bool = True):
     Should be used instead of print() to make it easier for students
     to determine what came from the tester and what from their program.
     """
-    msg: str = f"[{__getCurSeconds()}][P]: {text.rstrip()}"
+    msg: str = f"[{__getCurDateTimeStr()}] [P]: {text.rstrip()}"
     __printStdout(msg)
     if addToCache:
         testerOutputCache.append(msg)

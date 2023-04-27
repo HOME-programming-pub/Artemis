@@ -8,8 +8,8 @@ from testUtils.Tester import Tester
 
 def main():
     # Makefile location:
-    # Artemis expects it to be located in ../assignment
-    makefileLocation: str = "../assignment"
+    # Artemis expects it to be located in ../exercise
+    makefileLocation: str = "../exercise"
 
     # Create a new instance of the tester:
     tester: Tester = Tester()
@@ -18,7 +18,7 @@ def main():
 
     # Basic compile test:
     # Run after the sanitizer so we run the tests without any sanitizer enabled
-    testCompile: TestCompile = TestCompile(makefileLocation, "helloWorld")
+    testCompile: TestCompile = TestCompile(makefileLocation, "exercise")
     tester.addTest(testCompile)
 
     # Test Hello World:

@@ -1,0 +1,130 @@
+# stages:
+#     - test
+#     - upload
+
+# test-job:
+#     image: ${ARTEMIS_BUILD_DOCKER_IMAGE}
+#     stage: test
+#     only:
+#         variables:
+#             - $CI_COMMIT_BRANCH == $ARTEMIS_SUBMISSION_GIT_BRANCH
+#     allow_failure: true
+#     variables:
+#         GIT_STRATEGY: none
+#         MAVEN_OPTS: -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=[yyyy-MM-dd'T'HH:mm:ssX] -Dorg.slf4j.simpleLogger.logFile=${ARTEMIS_BUILD_LOGS_FILE}
+#     script:
+#         - git clone --branch ${ARTEMIS_TEST_GIT_BRANCH} ${CI_SERVER_PROTOCOL}://${ARTEMIS_TEST_GIT_USER}:${ARTEMIS_TEST_GIT_TOKEN}@${CI_SERVER_HOST}:${CI_SERVER_PORT}/${CI_PROJECT_NAMESPACE}/${ARTEMIS_TEST_GIT_REPOSITORY_SLUG} .
+#         - git clone --branch ${ARTEMIS_SUBMISSION_GIT_BRANCH} ${CI_SERVER_PROTOCOL}://${ARTEMIS_TEST_GIT_USER}:${ARTEMIS_TEST_GIT_TOKEN}@${CI_SERVER_HOST}:${CI_SERVER_PORT}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} exercise
+#         - export ARTEMIS_NOTIFICATION_SECRET=[hidden] # Workaround for overwriting the secret
+#         - export ARTEMIS_TEST_GIT_TOKEN=[hidden]
+#         - mvn --version && echo "ARTEMIS_BUILD_STATUS=success" > .env || echo "ARTEMIS_BUILD_STATUS=failed" > .env
+#     after_script:
+#         - echo "ARTEMIS_TEST_GIT_HASH=$(git rev-parse HEAD)" >> .env
+#         - echo "ARTEMIS_SUBMISSION_GIT_HASH=${CI_COMMIT_SHA}" >> .env
+#         - echo "ARTEMIS_SUBMISSION_GIT_REPOSITORY_SLUG=${CI_PROJECT_NAME}" >> .env
+#     artifacts:
+#         paths:
+#             - ${ARTEMIS_BUILD_LOGS_FILE}
+#             - ${ARTEMIS_TEST_RESULTS_DIR}/*.xml
+#         reports:
+#             dotenv: .env
+
+# upload-job:
+#     image: ${ARTEMIS_NOTIFICATION_PLUGIN_DOCKER_IMAGE}
+#     stage: upload
+#     dependencies:
+#         - test-job
+#     only:
+#         variables:
+#             - $CI_COMMIT_BRANCH == $ARTEMIS_SUBMISSION_GIT_BRANCH
+#     variables:
+#         GIT_STRATEGY: none
+#     script:
+#         - cp -r /notification-plugin/* .
+#         - gradle run
+
+stages:
+    - test
+    - upload
+
+test-job:
+    image: ${ARTEMIS_BUILD_DOCKER_IMAGE}
+    stage: test
+    only:
+        variables:
+            - $CI_COMMIT_BRANCH == $ARTEMIS_SUBMISSION_GIT_BRANCH
+    allow_failure: true
+    variables:
+        GIT_STRATEGY: none
+    before_script:
+        - git clone --branch ${ARTEMIS_TEST_GIT_BRANCH} ${CI_SERVER_PROTOCOL}://${ARTEMIS_TEST_GIT_USER}:${ARTEMIS_TEST_GIT_TOKEN}@${CI_SERVER_HOST}:${CI_SERVER_PORT}/${CI_PROJECT_NAMESPACE}/${ARTEMIS_TEST_GIT_REPOSITORY_SLUG} tests
+        - git clone --branch ${ARTEMIS_SUBMISSION_GIT_BRANCH} ${CI_SERVER_PROTOCOL}://${ARTEMIS_TEST_GIT_USER}:${ARTEMIS_TEST_GIT_TOKEN}@${CI_SERVER_HOST}:${CI_SERVER_PORT}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} exercise
+        # Workaround for overwriting the secret
+        - export ARTEMIS_NOTIFICATION_SECRET=[hidden]
+        - export ARTEMIS_TEST_GIT_TOKEN=[hidden]
+    script:
+        - sudo chown artemis_user:artemis_user exercise/ -R
+        - sudo rm -rf target
+        - sudo mkdir target
+        - sudo chown artemis_user:artemis_user target/ -R
+        # Installing python dependencies
+        - cd tests
+        - REQ_FILE=requirements.txt
+        - test -f "$REQ_FILE" || exit 1
+        - pip3 install --user -r requirements.txt
+        - cd ..
+        # Setup makefile
+        - shadowFilePath="../tests/testUtils/c/shadow_exec.c"
+        - foundIncludeDirs=`grep -m 1 'INCLUDEDIRS\s*=' exercise/Makefile`
+        - foundSource=`grep -m 1 'SOURCE\s*=' exercise/Makefile`
+        - foundSource="$foundSource $shadowFilePath"
+        - rm -f exercise/GNUmakefile
+        - rm -f exercise/makefile
+        - cp -f tests/Makefile exercise/Makefile || exit 2
+          # Build and run all tests if the compilation succeeds
+        - sed -i "s~\bINCLUDEDIRS\s*=.*~${foundIncludeDirs}~; s~\bSOURCE\s*=.*~${foundSource}~" exercise/Makefile
+        - gcc -c -Wall -Wextra -Wpedantic -g -Werror exercise/*.c 2> ${ARTEMIS_BUILD_LOGS_FILE} 1> ${ARTEMIS_BUILD_LOGS_FILE} && echo "ARTEMIS_BUILD_STATUS=success" > .env || (echo "ARTEMIS_BUILD_STATUS=failed" > .env && exit 0)
+          # Run all tests
+        - cd tests
+        - python3 Tests.py s | tee ../${ARTEMIS_BUILD_LOGS_FILE}
+        - rm Tests.py
+        - rm -rf ./tests
+        - cd ..
+        # Format results
+        - test -e test-reports/tests-results.xml || exit 1
+        - sed -i 's/[^[:print:]]/�/g' test-reports/tests-results.xml
+        - sed -i 's/<skipped/<error/g' test-reports/tests-results.xml
+        - sed -i 's/<\/skipped>/<\/error>/g' test-reports/tests-results.xml
+    after_script:
+        - mkdir -p ${ARTEMIS_TEST_RESULTS_DIR}
+        - mv test-reports/* ${ARTEMIS_TEST_RESULTS_DIR}
+        #
+        - cd tests
+        - echo "ARTEMIS_TEST_GIT_HASH=$(git rev-parse HEAD)" >> ../.env
+        - echo "ARTEMIS_SUBMISSION_GIT_HASH=${CI_COMMIT_SHA}" >> ../.env
+        - echo "ARTEMIS_SUBMISSION_GIT_REPOSITORY_SLUG=${CI_PROJECT_NAME}" >> ../.env
+        - cd ..
+        #
+        - sudo rm -rf tests/
+        - sudo rm -rf exercise/
+        - sudo rm -rf test-reports/
+    artifacts:
+        paths:
+            - ${ARTEMIS_BUILD_LOGS_FILE}
+            - ${ARTEMIS_TEST_RESULTS_DIR}/*.xml
+        reports:
+            dotenv: .env
+
+upload-job:
+    image: ${ARTEMIS_NOTIFICATION_PLUGIN_DOCKER_IMAGE}
+    stage: upload
+    dependencies:
+        - test-job
+    only:
+        variables:
+            - $CI_COMMIT_BRANCH == $ARTEMIS_SUBMISSION_GIT_BRANCH
+    variables:
+        GIT_STRATEGY: none
+    script:
+        - cp -r /notification-plugin/* .
+        - gradle run

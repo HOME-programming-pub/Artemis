@@ -1,10 +1,10 @@
+--- # ----------------------------------------------------------------------------------------------------------------------
+
 # ----------------------------------------------------------------------------------------------------------------------
 # Artemis base service
-# ----------------------------------------------------------------------------------------------------------------------
-
 services:
-    artemis-app:
-        container_name: artemis-app
+    artemis:
+        container_name: artemis
         platform: linux/amd64
         # look in the docs for more information about how to build your Artemis code with Docker
         # https://docs.artemis.cit.tum.de/dev/setup/#
@@ -20,6 +20,10 @@ services:
         # either add them in the environments or env_file section (alternative to application-local.yml)
         env_file:
             - ./artemis/config/prod-application-local.env
+        # environments can also be used for custom overrides (alternative to application-local.yml)
+        # the following environments are necessary for docker images orchestrated by docker compose
+        environment:
+            SPRING_PROFILES_ACTIVE: artemis,scheduling,athene,prod,docker
         # if you need to use another port than 8080 or one fixed port for all artemis-app containers in the future
         # you will probably not be able to override this setting outside the artemis.yml
         # as stated in the docker compose docs (at least not when this was committed)
@@ -29,8 +33,11 @@ services:
             start_period: 600s
             interval: 1s
         # expose the port to make it reachable docker internally even if the external port mapping changes
+        ports:
+            - "8080:80"
+        # expose the ports to make them reachable docker internally even if the external port mapping changes
         expose:
-            - "8080"
+            - "80"
         networks:
             - artemis
 

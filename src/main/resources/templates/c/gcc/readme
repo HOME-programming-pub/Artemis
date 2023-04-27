@@ -6,8 +6,7 @@ Die Aufgabenstellung entnehmen Sie bitte [https://gbs.cm.in.tum.de](https://gbs.
 #### Allgemein
 
 1. [task][kompilieren](TestCompile)
-2. [task][rückgabewert == 0](TestReturnCode)
-3. [task][ausgabe prüfen](TestOutput)
+2. [task][ausgabe prüfen](TestOutput)
 
 #### Address Sanitizer
 

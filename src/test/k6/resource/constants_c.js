@@ -28,7 +28,7 @@ export const buildErrorContentC = {
     newFiles: [],
     content: [
         {
-            fileName: 'helloWorld.c',
+            fileName: 'excercise.c',
             fileContent: 'a',
         },
     ],
@@ -38,7 +38,7 @@ export const someSuccessfulErrorContentC = {
     newFiles: [],
     content: [
         {
-            fileName: 'helloWorld.c',
+            fileName: 'excercise.c',
             fileContent: '// Do magic ╰( ͡° ͜ʖ ͡° )つ──☆*:・ﾟ and implement your "Hello world" programm here.\n',
         },
     ],
@@ -48,7 +48,7 @@ export const allSuccessfulContentC = {
     newFiles: [],
     content: [
         {
-            fileName: 'helloWorld.c',
+            fileName: 'excercise.c',
             fileContent:
                 '#include <stdio.h> // For printf(...)\n' +
                 '#include <stdlib.h> // For EXIT_SUCCESS\n' +

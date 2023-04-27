@@ -76,7 +76,7 @@ describe('ChannelsCreateDialogComponent', () => {
         const form: ChannelFormStubComponent = fixture.debugElement.query(By.directive(ChannelFormStubComponent)).componentInstance;
         const formData: ChannelFormData = {
             name: 'test',
-            description: 'helloWorld',
+            description: 'exercise',
             isPublic: true,
         };
         form.formSubmitted.emit(formData);
