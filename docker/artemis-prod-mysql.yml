@@ -28,7 +28,7 @@ services:
             service: nginx
         # the artemis-app service needs to be started, otherwise there are problems with name resolution in docker
         depends_on:
-            artemis-app:
+            artemis:
                 condition: service_started
         restart: on-failure:3
 
