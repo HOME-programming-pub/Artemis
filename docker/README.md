@@ -15,7 +15,7 @@ docker-compose -f docker/gitlab-gitlabci.yml --env-file docker/gitlab/gitlab-git
 ### Setup
 
 ```bash
-docker-compose -f docker/gitlab-gitlabci.yml exec gitlab ./setup.sh
+docker-compose -f docker/gitlab-gitlabci.yml exec gitlab ./setup.sh >> docker/.env
 ```
 
 ### Runner 
@@ -46,7 +46,14 @@ docker-compose -f docker/gitlab-gitlabci.yml stop
 ```
 
 ```bash
-DOCKER_BUILDKIT=1 docker-compose -f docker/artemis-production.docker-compose.yml build --no-cache
+DOCKER_BUILDKIT=1 docker-compose -f docker/artemis-prod-mysql.yml build --no-cache
 ```
 
-## 
+## Start
+
+```bash
+
+docker-compose -f docker/gitlab-gitlabci.yml --env-file docker/gitlab/gitlab-gitlabci.env up -d
+
+DOCKER_BUILDKIT=1 docker-compose -f docker/artemis-prod-mysql.yml up -d
+```
