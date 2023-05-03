@@ -9,10 +9,12 @@ services:
         extends:
             file: ./artemis-prod-mysql.yml
             service: artemis-app
+
     mysql:
         extends:
             file: ./artemis-prod-mysql.yml
             service: mysql
+
     nginx:
         extends:
             file: ./artemis-prod-mysql.yml

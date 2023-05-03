@@ -1,7 +1,3 @@
---- # ----------------------------------------------------------------------------------------------------------------------
-
-# ----------------------------------------------------------------------------------------------------------------------
-# Artemis base service
 services:
     artemis:
         container_name: artemis
@@ -47,6 +43,7 @@ networks:
     artemis:
         driver: "bridge"
         name: artemis
+
 volumes:
     artemis-data:
         name: artemis-data

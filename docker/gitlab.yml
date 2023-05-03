@@ -1,12 +1,6 @@
---- # ----------------------------------------------------------------------------------------------------------------------
-
-# ----------------------------------------------------------------------------------------------------------------------
-# GitLab base service
 services:
     gitlab:
         container_name: artemis-gitlab
-        extra_hosts:
-            - "host.docker.internal:host-gateway"
         build: ./gitlab
         platform: linux/amd64
         volumes:
@@ -28,11 +22,14 @@ services:
             - "80"
         networks:
             - artemis
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
 
 networks:
     artemis:
         driver: "bridge"
         name: artemis
+
 volumes:
     artemis-gitlab-data:
         name: artemis-gitlab-data
