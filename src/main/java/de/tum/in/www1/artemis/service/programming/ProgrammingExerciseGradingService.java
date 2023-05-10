@@ -125,12 +125,12 @@ public class ProgrammingExerciseGradingService {
         try {
             var buildResult = continuousIntegrationResultService.orElseThrow().convertBuildResult(requestBody);
             checkCorrectBranchElseThrow(participation, buildResult);
-
             newResult = continuousIntegrationResultService.get().createResultFromBuildResult(buildResult, participation);
 
             // Fetch submission or create a fallback
             var latestSubmission = getSubmissionForBuildResult(participation.getId(), buildResult).orElseGet(() -> createAndSaveFallbackSubmission(participation, buildResult));
-            latestSubmission.setBuildFailed(newResult.getFeedbacks().stream().allMatch(Feedback::isStaticCodeAnalysisFeedback));
+            // latestSubmission.setBuildFailed(newResult.getFeedbacks().stream().allMatch(Feedback::isStaticCodeAnalysisFeedback)); // FIXME: THIS!!!
+            latestSubmission.setBuildFailed(!newResult.isSuccessful());
             // Add artifacts to submission
             latestSubmission.setBuildArtifact(buildResult.hasArtifact());
 

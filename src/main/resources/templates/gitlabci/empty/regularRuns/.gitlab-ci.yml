@@ -19,6 +19,7 @@ test-job:
         - export ARTEMIS_TEST_GIT_TOKEN=[hidden]
         - mvn test -B && echo "ARTEMIS_BUILD_STATUS=success" > .env || echo "ARTEMIS_BUILD_STATUS=failed" > .env
     after_script:
+        - mkdir -p target/surefire-reports/ #  Workarrond to get Build Logs even if it failed
         - mkdir -p ${ARTEMIS_TEST_RESULTS_DIR}
         - mv target/surefire-reports/* ${ARTEMIS_TEST_RESULTS_DIR}
         - echo "ARTEMIS_TEST_GIT_HASH=$(git rev-parse HEAD)" >> .env
