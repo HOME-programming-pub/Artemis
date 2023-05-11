@@ -10,14 +10,14 @@ An overview of all possible setups can be found in the docs at `docs/dev/setup.r
 
 The following command starts GitLab and its Runner container which is needed to generate an Access Token for Artemis.
 ```bash
-docker-compose -f docker/gitlab-gitlabci.yml --env-file docker/gitlab/gitlab-gitlabci.env up --build -d
+docker compose -f docker/gitlab-gitlabci.yml --env-file docker/gitlab/gitlab-gitlabci.env up --build -d
 ```
 
 ### Setup
 
 To generate the token, you can etiher do it via the GitLab API using your webbrowser, or use this setpscript, which uses the default configuration we need.
 ```bash
-docker-compose -f docker/gitlab-gitlabci.yml exec gitlab ./setup.sh >> docker/.env
+docker compose -f docker/gitlab-gitlabci.yml --env-file docker/gitlab/gitlab-gitlabci.env exec gitlab ./setup.sh >> docker/.env
 ```
 
 ### Runner 
@@ -25,8 +25,9 @@ docker-compose -f docker/gitlab-gitlabci.yml exec gitlab ./setup.sh >> docker/.e
 We also need atleast one Runner Instance to run tests. 
 You can run this command multiple times, to create multiple runners if needed. 
 ```bash
-docker-compose -f docker/gitlab-gitlabci.yml exec gitlab-runner ./register.sh
+docker compose -f docker/gitlab-gitlabci.yml exec gitlab-runner ./register.sh
 ```
+> You might need to run this twice, the first attempt might fail, but the second works.
 
 ## Certificates
 
@@ -58,21 +59,37 @@ set -a && . docker/.env && set +a; envsubst < docker/artemis/config/prod-applica
 Before we can build Artemis, depending on your hosts resources you need to stop the running containers.
 
 ```bash
-docker-compose -f docker/gitlab-gitlabci.yml stop
+docker compose -f docker/gitlab-gitlabci.yml stop
 ```
+#### Build Locally First
+
+If you choosed to build locally and then use the reslting `WAR` file on the new host, then run the following commands locally (might be differnt depending on your operating system / distribtion).
+
+```bash
+sudo ./gradlew -Pprod -Pwar clean bootWar --no-daemon --max-workers=2
+```
+
+And to move it to the server:
+`scp buil/libs/*.war <user>@<host>:/path/to/project/build/libs/Artemis.war`
+
+```bash
+scp build/libs/*.war root@artemis.hs-merseburg.de:/root/Artemis/build/libs/Artemis.war
+```
+
+### Continue Build
 
 Now we can either use this repository to build artemis, or we can build artemis locally, `scp` it into `build/libs/Artemis.war`, which is the preconfigured way, to change it edit `docker/artemis.yml` and change the build argument `WAR_FILE_STAGE` to `builder`.
 ```bash
-DOCKER_BUILDKIT=1 docker-compose -f docker/artemis-prod-mysql.yml build --no-cache artemis
+DOCKER_BUILDKIT=1 docker compose -f docker/artemis-prod-mysql.yml build --no-cache artemis
 ```
 
 ## Start
 
 With everything build and configured we can now start GitLab and its Runner and once they are started up we can start the Database, MailServer, Artemis and NGINX.
 ```bash
-docker-compose -f docker/gitlab-gitlabci.yml --env-file docker/gitlab/gitlab-gitlabci.env up -d
+docker compose -f docker/gitlab-gitlabci.yml --env-file docker/gitlab/gitlab-gitlabci.env up -d
 
-DOCKER_BUILDKIT=1 docker-compose -f docker/artemis-prod-mysql.yml up -d
+DOCKER_BUILDKIT=1 docker compose -f docker/artemis-prod-mysql.yml up -d
 ```
 
 To test if everything works check [Artemis](https://artemis) or [GitLab](https://gitlab).
