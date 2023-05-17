@@ -15,7 +15,8 @@ gitlab-rails runner "token = $map"
 sleep 10
 
 # Allow outbound requests to local network
-bool=$(curl -s --request PUT --header "Authorization: Bearer $GITLAB_ACCESS_TOKEN" "$GITLAB_API_URL/v4/application/settings?allow_local_requests_from_hooks_and_services=true&allow_local_requests_from_web_hooks_and_services=true&allow_local_requests_from_system_hooks=true" | jq -r .allow_local_requests_from_web_hooks_and_services)
+ bool=$(curl -s --request PUT --header "Authorization: Bearer $GITLAB_ACCESS_TOKEN" "$GITLAB_API_URL/v4/application/settings?allow_local_requests_from_hooks_and_services=true&allow_local_requests_from_web_hooks_and_services=true&allow_local_requests_from_system_hooks=true" | jq -r .allow_local_requests_from_web_hooks_and_services)
+
 if [ "true" != $bool ] ; then
     echo "Failed to allow outbound requests to local network. Go to $GITLAB_HOST:$GITLAB_PORT/admin/application_settings/network → Outbound requests and enable it."
     exit 1

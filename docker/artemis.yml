@@ -11,7 +11,7 @@ services:
             # pull: true
             target: runtime
             args:
-                WAR_FILE_STAGE: "external_builder"
+                WAR_FILE_STAGE: "builder"
         volumes:
             - artemis-data:/opt/artemis/data
         # system environments are the default way for custom configuration overrides in the containerized artemis setups
