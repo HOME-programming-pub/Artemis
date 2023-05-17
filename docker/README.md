@@ -17,7 +17,7 @@ docker compose -f docker/gitlab-gitlabci.yml --env-file docker/gitlab/gitlab-git
 
 To generate the token, you can etiher do it via the GitLab API using your webbrowser, or use this setpscript, which uses the default configuration we need.
 ```bash
-docker compose -f docker/gitlab-gitlabci.yml --env-file docker/gitlab/gitlab-gitlabci.env exec gitlab ./setup.sh >> docker/.env
+docker-compose -f docker/gitlab-gitlabci.yml exec gitlab ./setup.sh >> docker/.env
 ```
 
 ### Runner 
