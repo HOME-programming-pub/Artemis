@@ -76,6 +76,12 @@ And to move it to the server:
 scp build/libs/*.war root@artemis.hs-merseburg.de:/root/Artemis/build/libs/Artemis.war
 ```
 
+Or
+
+```bash
+rsync -r build/libs/*.war jo@localhost:/home/jo/Artemis/build/libs/Artemis.war
+```
+
 ### Continue Build
 
 Now we can either use this repository to build artemis, or we can build artemis locally, `scp` it into `build/libs/Artemis.war`, which is the preconfigured way, to change it edit `docker/artemis.yml` and change the build argument `WAR_FILE_STAGE` to `builder`.
