@@ -16,7 +16,7 @@ services:
             - artemis-data:/opt/artemis/data
         # system environments are the default way for custom configuration overrides in the containerized artemis setups
         # either add them in the environments or env_file section (alternative to application-local.yml)
-            - ./gitlab/certs/gitlab.crt:/etc/pki/java/cacerts/gitlab.crt:ro
+            - ./gitlab/certs/gitlab.crt:/opt/artemis/certs/gitlab.crt:ro
         env_file:
             - ./artemis/config/prod-application-local.env
         # environments can also be used for custom overrides (alternative to application-local.yml)
