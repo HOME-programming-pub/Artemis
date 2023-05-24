@@ -89,6 +89,8 @@ VOLUME ["/opt/artemis/config"]
 VOLUME ["/opt/artemis/data"]
 VOLUME ["/opt/artemis/public/content"]
 
+RUN keytool -keystore cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias gitlab -file $JAVA_HOME/jre/lib/security/gitlab.crt
+
 EXPOSE 8080
 
 # use exec format (square brackets) as otherwise the shell fromat will not forward signals
