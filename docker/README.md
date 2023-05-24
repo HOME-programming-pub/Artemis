@@ -81,7 +81,7 @@ scp build/libs/*.war root@artemis.hs-merseburg.de:/root/Artemis/build/libs/Artem
 Or
 
 ```bash
-rsync -r build/libs/*.war jo@localhost:/home/jo/Artemis/build/libs/Artemis.war
+rsync -r build/libs/*.war root@artemis.hs-merseburg.de:/root/Artemis/build/libs/Artemis.war
 ```
 
 ### Continue Build
