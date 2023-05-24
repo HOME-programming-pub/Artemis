@@ -24,6 +24,10 @@ ARG WAR_FILE_STAGE="builder"
 #-----------------------------------------------------------------------------------------------------------------------
 FROM docker.io/library/eclipse-temurin:17-jdk as builder
 
+RUN echo $JAVA_HOME
+
+RUN keytool -keystore cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias gitlab -file $JAVA_HOME/jre/lib/security/gitlab.crt
+
 WORKDIR /opt/artemis
 # so far just using the .dockerignore to define what isn't necessary here
 COPY . .
@@ -88,8 +92,6 @@ COPY --chown=artemis:artemis --from=war_file ${WAR_FILE_PATH}/*.war Artemis.war
 VOLUME ["/opt/artemis/config"]
 VOLUME ["/opt/artemis/data"]
 VOLUME ["/opt/artemis/public/content"]
-
-RUN keytool -keystore cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias gitlab -file $JAVA_HOME/jre/lib/security/gitlab.crt
 
 EXPOSE 8080
 
