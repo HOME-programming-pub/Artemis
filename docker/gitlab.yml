@@ -17,10 +17,12 @@ services:
         ports:
             - "2222:22"
             - "8081:80"
+            - "1443:443"
         # expose the ports to make them reachable docker internally even if the external port mapping changes
         expose:
             - "22"
             - "80"
+            - "443"
         networks:
             - artemis
         extra_hosts:

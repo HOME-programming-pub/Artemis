@@ -17,7 +17,8 @@ test-job:
         - git clone --branch ${ARTEMIS_SUBMISSION_GIT_BRANCH} ${CI_SERVER_PROTOCOL}://${ARTEMIS_TEST_GIT_USER}:${ARTEMIS_TEST_GIT_TOKEN}@${CI_SERVER_HOST}:${CI_SERVER_PORT}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} assignment
         - export ARTEMIS_NOTIFICATION_SECRET=[hidden] # Workaround for overwriting the secret
         - export ARTEMIS_TEST_GIT_TOKEN=[hidden]
-        - mvn test -B --fail-at-end && echo "ARTEMIS_BUILD_STATUS=success" > .env || echo "ARTEMIS_BUILD_STATUS=failed" > .env
+        - mvn test -B --fail-at-end
+        - if [ $? -eq 0 ]; then echo "ARTEMIS_BUILD_STATUS=success" > .env; else echo "ARTEMIS_BUILD_STATUS=failed" > .env; fi
     after_script:
         - sed '0,/^\[.*\] \[INFO\] Results:$/d' ${ARTEMIS_BUILD_LOGS_FILE} > ${ARTEMIS_BUILD_LOGS_FILE}.tmp # Remove unused leading logs
         - sed 's/\(.*\) \[ERROR\]   \(.*Test\)[>.]\(.*:\)[0-9]*\(.*\)/\1 \[ERROR\] [\2\]:\4/p' ${ARTEMIS_BUILD_LOGS_FILE}.tmp > ${ARTEMIS_BUILD_LOGS_FILE}.tmp2 # Reformat Failed Tests

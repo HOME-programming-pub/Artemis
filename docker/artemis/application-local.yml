@@ -41,7 +41,7 @@ artemis:
     login:
       account-name: "$ARTEMIS_NAME" # FIXME: optional: customization for the welcome page "please sign in with your <account-name> account"
   version-control:
-    url: "$GITLAB_HOST:$GITLAB_PORT"
+    url: "$GITLAB_URL"
     user: "$GITLAB_ROOT_USER" # FIXME:
     password: "$GITLAB_ROOT_PASSWORD" # FIXME: created in Gitlab Server Quickstart step 2
     token: "$ARTEMIS_ACCESS_TOKEN" # FIXME: VCS API token giving Artemis full Admin access.
@@ -53,7 +53,7 @@ artemis:
     default-branch: "main" # The branch that should be used as default branch for all newly created repositories. This does NOT have to be equal to the default branch of the VCS
     version-control-access-token: true # only for Gitlab setups: a Gitlab-API token can be generated for each user and used as part of the Git clone URL shown to students to allow for password-less Git operations via HTTP
   continuous-integration:
-    url: "$GITLAB_HOST:$GITLAB_PORT"
+    url: "$GITLAB_URL"
     # user: <username>                # e.g. ga12abc
     # password: <password>
     # token: <token>                  # Enter a valid token generated in Bamboo giving Artemis full Admin access
