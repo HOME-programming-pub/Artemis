@@ -10,6 +10,9 @@ services:
             - artemis-gitlab-config:/etc/gitlab
             # - ./gitlab/gitlab-local-setup.sh:/gitlab-local-setup.sh
             - ./gitlab/setup.sh:/setup.sh
+            - ./gitlab/certs/gitlab.crt:/etc/gitlab/ssl/gitlab.crt:ro
+            - ./gitlab/certs/gitlab.key:/etc/gitlab/ssl/gitlab.key:ro
+
 
         environment:
             GITLAB_OMNIBUS_CONFIG: "prometheus_monitoring['enable'] = false; gitlab_rails['gitlab_shell_ssh_port'] = 2222; gitlab_rails['monitoring_whitelist'] = ['0.0.0.0/0']"

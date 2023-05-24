@@ -97,7 +97,7 @@ With everything build and configured we can now start GitLab and its Runner and 
 ```bash
 docker compose -f docker/gitlab-gitlabci.yml --env-file docker/gitlab/gitlab-gitlabci.env up -d
 
-DOCKER_BUILDKIT=1 docker compose -f docker/artemis-prod-meysql.yml up -d
+DOCKER_BUILDKIT=1 docker compose -f docker/artemis-prod-mysql.yml up -d
 ```
 
 To test if everything works check [Artemis](https://artemis) or [GitLab](https://gitlab).
