@@ -28,6 +28,8 @@ node_modules
 build/*
 !build/libs/*.war
 
+# exclude the /docker/.docker-data folders (ALLOW CRT FILES!!!)
+docker/.docker-data
 #########################
 # exclude Artemis configs
 #########################

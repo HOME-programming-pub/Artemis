@@ -12,6 +12,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/local/bin/docker:/usr/bin/docker
       - artemis-gitlabci-runner-config:/etc/gitlab-runner
+      - ./gitlab/certs/gitlab.crt:/etc/gitlab-runner/certs/gitlab.artemis.hs-merseburg.de.crt:ro
     env_file:
       - ./gitlab/gitlab-gitlabci.env
     hostname: 'gitlab-runner'

@@ -3,6 +3,26 @@
 An overview of all possible setups can be found in the docs at `docs/dev/setup.rst` in the section
 `Alternative: Docker Compose Setup`.
 
+## Certificates
+
+<__untested__> To generate new Certificates yo can use the following command, lateron using a real certifacte should be better!
+```bash
+docker run --rm -v ${PWD}/docker/nginx/certs:/certs $(docker build -q docker/nginx/certs/ ) /certs/generate-certs.sh artemis-nginx artemis.hs-merseburg.de gitlab.artemis.hs-merseburg.de localhost 127.0.0.1 ::1
+```
+
+### Self Signed Certificates (NEEDS TO BE CHANGED!!!)
+
+For now only needed for `GitLab` (NGINX uses the one above). 
+I am not sure what the right way is, but thats what I chose for now.
+Feel free to change it.
+
+```bash
+openssl genrsa -out ca.key 2048
+openssl req -new -x509 -days 365 -key ca.key -subj "/C=DE/ST=SA/L=Merseburg/O=Hochschule Merseburg/" -out ca.crt
+
+openssl req -newkey rsa:2048 -nodes -keyout gitlab.key -subj "/C=DE/ST=SA/L=Merseburg/O=Hochschule Merseburg/CN=*.artemis.hs-merseburg.de" -out gitlab.csr
+openssl x509 -req -extfile <(printf "subjectAltName=DNS:gitlab.artemis.hs-merseburg.de,DNS:gitlab.artemis.hs-merseburg.de") -days 365 -in gitlab.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out gitlab.crt
+```
 
 ## GitLab and GitLabCI
 
@@ -30,13 +50,6 @@ You can run this command multiple times, to create multiple runners if needed.
 docker compose -f docker/gitlab-gitlabci.yml exec gitlab-runner ./register.sh
 ```
 > You might need to run this twice, the first attempt might fail, but the second works.
-
-## Certificates
-
-<__untested__> To generate new Certificates yo can use the following command, lateron using a real certifacte should be better!
-```bash
-docker run --rm -v ${PWD}/docker/nginx/certs:/certs $(docker build -q docker/nginx/certs/ ) /certs/generate-certs.sh artemis-nginx artemis.example localhost 127.0.0.1 ::1
-```
 
 ## Artemis
 

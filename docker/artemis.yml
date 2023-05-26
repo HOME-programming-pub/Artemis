@@ -11,12 +11,9 @@ services:
             # pull: true
             target: runtime
             args:
-                WAR_FILE_STAGE: "builder"
+                WAR_FILE_STAGE: "external_builder"
         volumes:
             - artemis-data:/opt/artemis/data
-        # system environments are the default way for custom configuration overrides in the containerized artemis setups
-        # either add them in the environments or env_file section (alternative to application-local.yml)
-            - ./gitlab/certs/gitlab.crt:/opt/artemis/certs/gitlab.crt:ro
         env_file:
             - ./artemis/config/prod-application-local.env
         # environments can also be used for custom overrides (alternative to application-local.yml)
@@ -37,6 +34,7 @@ services:
         # expose the ports to make them reachable docker internally even if the external port mapping changes
         expose:
             - "80"
+        hostname: artemis.hs-merseburg.de
         networks:
             - artemis
 

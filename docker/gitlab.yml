@@ -10,10 +10,8 @@ services:
             - artemis-gitlab-config:/etc/gitlab
             # - ./gitlab/gitlab-local-setup.sh:/gitlab-local-setup.sh
             - ./gitlab/setup.sh:/setup.sh
-            - ./gitlab/certs/gitlab.crt:/etc/gitlab/ssl/gitlab.crt:ro
-            - ./gitlab/certs/gitlab.key:/etc/gitlab/ssl/gitlab.key:ro
-
-
+            - ./gitlab/certs/gitlab.crt:/etc/gitlab/ssl/gitlab.artemis.hs-merseburg.de.crt:ro
+            - ./gitlab/certs/gitlab.key:/etc/gitlab/ssl/gitlab.artemis.hs-merseburg.de.key:ro
         environment:
             GITLAB_OMNIBUS_CONFIG: "prometheus_monitoring['enable'] = false; gitlab_rails['gitlab_shell_ssh_port'] = 2222; gitlab_rails['monitoring_whitelist'] = ['0.0.0.0/0']"
             GITLAB_ROOT_PASSWORD:
@@ -26,6 +24,7 @@ services:
             - "22"
             - "80"
             - "443"
+        hostname: gitlab.artemis.hs-merseburg.de
         networks:
             - artemis
         extra_hosts:
