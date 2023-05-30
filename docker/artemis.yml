@@ -34,10 +34,12 @@ services:
         # expose the ports to make them reachable docker internally even if the external port mapping changes
         expose:
             - "80"
-        hostname: artemis.hs-merseburg.de
+        hostname: artemis
         networks:
             - artemis
-
+        extra_hosts:
+            - "artemis.hs-merseburg.de:host-gateway"
+            - "gitlab.artemis.hs-merseburg.de:host-gateway"
 networks:
     artemis:
         driver: "bridge"

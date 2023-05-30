@@ -8,28 +8,24 @@ services:
             - artemis-gitlab-data:/var/opt/gitlab
             - artemis-gitlab-logs:/var/log/gitlab
             - artemis-gitlab-config:/etc/gitlab
-            # - ./gitlab/gitlab-local-setup.sh:/gitlab-local-setup.sh
             - ./gitlab/setup.sh:/setup.sh
-            - ./gitlab/certs/gitlab.crt:/etc/gitlab/ssl/gitlab.artemis.hs-merseburg.de.crt:ro
-            - ./gitlab/certs/gitlab.key:/etc/gitlab/ssl/gitlab.artemis.hs-merseburg.de.key:ro
         environment:
             GITLAB_OMNIBUS_CONFIG: "prometheus_monitoring['enable'] = false; gitlab_rails['gitlab_shell_ssh_port'] = 2222; gitlab_rails['monitoring_whitelist'] = ['0.0.0.0/0']"
             GITLAB_ROOT_PASSWORD:
         ports:
             - "2222:22"
             - "8081:80"
-            - "1443:443"
         # expose the ports to make them reachable docker internally even if the external port mapping changes
         expose:
             - "22"
             - "80"
-            - "443"
-        hostname: gitlab.artemis.hs-merseburg.de
+        hostname: gitlab.artemis
         networks:
             - artemis
         extra_hosts:
             - "host.docker.internal:host-gateway"
-
+            - "artemis.hs-merseburg.de:host-gateway"
+            - "gitlab.artemis.hs-merseburg.de:host-gateway"
 networks:
     artemis:
         driver: "bridge"

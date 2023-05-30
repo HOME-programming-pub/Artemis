@@ -52,16 +52,6 @@ FROM ${WAR_FILE_STAGE} as war_file
 #-----------------------------------------------------------------------------------------------------------------------
 FROM docker.io/library/eclipse-temurin:17-jdk as runtime
 
-# default path of the trusted certificate files
-ARG CERT_PATH="/opt/artemis/certs"
-
-WORKDIR ${CERT_PATH}
-
-COPY docker/gitlab/certs/gitlab.crt gitlab.crt
-
-# add gitlab as a trusted certifiacte
-RUN keytool -trustcacerts -keystore cacerts -storepass changeit -importcert -alias gitlab -file /opt/artemis/certs/gitlab.crt -noprompt
-
 #default path of the built .war files
 ARG WAR_FILE_PATH="/opt/artemis/build/libs"
 #default UID/GID of the artemis user
