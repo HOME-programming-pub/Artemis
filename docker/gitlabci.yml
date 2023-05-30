@@ -12,15 +12,17 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/local/bin/docker:/usr/bin/docker
       - artemis-gitlabci-runner-config:/etc/gitlab-runner
-      - ./gitlab/certs/gitlab.crt:/etc/gitlab-runner/certs/gitlab.artemis.hs-merseburg.de.crt:ro
+      - ./nginx/certs/rootCA.pem:/etc/gitlab-runner/certs/artemis.hs-merseburg.de.crt
+      - ./nginx/certs/rootCA.pem:/etc/gitlab/trusted-certs/gitlab.artemis.hs-merseburg.de.crt
     env_file:
       - ./gitlab/gitlab-gitlabci.env
     hostname: 'gitlab-runner'
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     networks:
       - artemis
-
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "artemis.hs-merseburg.de:host-gateway"
+      - "gitlab.artemis.hs-merseburg.de:host-gateway"
 networks:
   artemis:
     driver: "bridge"

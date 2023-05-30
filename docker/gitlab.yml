@@ -9,6 +9,8 @@ services:
             - artemis-gitlab-logs:/var/log/gitlab
             - artemis-gitlab-config:/etc/gitlab
             - ./gitlab/setup.sh:/setup.sh
+            - ./nginx/certs/rootCA.pem:/etc/gitlab/trusted-certs/artemis.hs-merseburg.de.crt
+            - ./nginx/certs/rootCA.pem:/etc/gitlab/trusted-certs/gitlab.artemis.hs-merseburg.de.crt
         environment:
             GITLAB_OMNIBUS_CONFIG: "prometheus_monitoring['enable'] = false; gitlab_rails['gitlab_shell_ssh_port'] = 2222; gitlab_rails['monitoring_whitelist'] = ['0.0.0.0/0']"
             GITLAB_ROOT_PASSWORD:
