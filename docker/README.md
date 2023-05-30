@@ -5,7 +5,7 @@ An overview of all possible setups can be found in the docs at `docs/dev/setup.r
 
 ## Certificates
 
-<__untested__> To generate new Certificates yo can use the following command, lateron using a real certifacte should be better!
+To generate new Certificates yo can use the following command, lateron using a real certifacte should be better!
 ```bash
 docker run --rm -v ${PWD}/docker/nginx/certs:/certs $(docker build -q docker/nginx/certs/) /certs/generate-certs.sh artemis-nginx artemis.hs-merseburg.de gitlab.artemis.hs-merseburg.de localhost 127.0.0.1 ::1 `docker network inspect bridge --format='{{(index .IPAM.Config 0).Gateway}}'`
 ```
