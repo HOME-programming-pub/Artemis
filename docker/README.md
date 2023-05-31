@@ -28,15 +28,6 @@ docker compose -f docker/gitlab-gitlabci.yml exec gitlab ./setup.sh >> docker/.e
 
 The copy and paste the output (`ARTEMIS_ACCESS_TOKEN`) into `docker/.env`.
 
-### Runner 
-
-We also need atleast one Runner Instance to run tests. 
-You can run this command multiple times, to create multiple runners if needed. 
-```bash
-docker compose -f docker/gitlab-gitlabci.yml exec gitlab-runner ./register.sh
-```
-> You might need to run this twice, the first attempt might fail, but the second works.
-
 ## Artemis
 
 ### Enviornment Variables
@@ -98,6 +89,19 @@ docker compose -f docker/gitlab-gitlabci.yml --env-file docker/gitlab/gitlab-git
 
 DOCKER_BUILDKIT=1 docker compose -f docker/artemis-prod-mysql.yml up -d
 ```
+
+### Runner 
+
+> This command needs nginx to be available, thats why we call it here!
+
+We also need atleast one Runner Instance to run tests. 
+You can run this command multiple times, to create multiple runners if needed. 
+```bash
+docker compose -f docker/gitlab-gitlabci.yml exec gitlab-runner ./register.sh
+```
+> You might need to run this twice, the first attempt might fail, but the second works.
+
+## Done
 
 To test if everything works check [Artemis](https://artemis.hs-merseburg.de) or [GitLab](https://gitlab.artemis.hs-merseburg.de).
 

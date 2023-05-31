@@ -37,9 +37,7 @@ services:
         hostname: artemis
         networks:
             - artemis
-        extra_hosts:
-            - "artemis.hs-merseburg.de:host-gateway"
-            - "gitlab.artemis.hs-merseburg.de:host-gateway"
+
 networks:
     artemis:
         driver: "bridge"

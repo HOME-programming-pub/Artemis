@@ -43,7 +43,10 @@ services:
             test: service nginx status || exit 1
             start_period: 60s
         networks:
-            - artemis
+            artemis:
+                aliases:
+                    - artemis.hs-merseburg.de
+                    - gitlab.artemis.hs-merseburg.de
 
 networks:
     artemis:

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GITLAB_INTERNAL="$GITLAB_HOST:$GITLAB_PORT"
+GITLAB_INTERNAL="$GIT_SERVER_NAME"
 
 REGISTRATION_TOKEN=$( \
   curl -s -k --request POST --header "Authorization: Bearer $GITLAB_ACCESS_TOKEN" "$GITLAB_INTERNAL/api/graphql" \
