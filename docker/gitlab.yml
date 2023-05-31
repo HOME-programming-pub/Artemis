@@ -11,16 +11,20 @@ services:
             - ./gitlab/setup.sh:/setup.sh
             - ./nginx/certs/rootCA.pem:/etc/gitlab/trusted-certs/artemis.hs-merseburg.de.crt
             - ./nginx/certs/rootCA.pem:/etc/gitlab/trusted-certs/gitlab.artemis.hs-merseburg.de.crt
+            - ./nginx/certs/artemis-nginx.pem:/etc/gitlab/ssl/gitlab.artemis.hs-merseburg.de.crt
+            - ./nginx/certs/artemis-nginx-key.pem:/etc/gitlab/ssl/gitlab.artemis.hs-merseburg.de.key
         environment:
             GITLAB_OMNIBUS_CONFIG: "prometheus_monitoring['enable'] = false; gitlab_rails['gitlab_shell_ssh_port'] = 2222; gitlab_rails['monitoring_whitelist'] = ['0.0.0.0/0']"
             GITLAB_ROOT_PASSWORD:
         ports:
             - "2222:22"
             - "8081:80"
+            - "1443:443"
         # expose the ports to make them reachable docker internally even if the external port mapping changes
         expose:
             - "22"
             - "80"
+            - "443"
         hostname: gitlab.artemis
         networks:
             - artemis

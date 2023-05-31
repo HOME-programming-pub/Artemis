@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GITLAB_API_URL="http://localhost/api/"
+GITLAB_API_URL="https://localhost/api/"
 
 # An Array of the Values which are used to create a new Access token via script instead of the GUI
 export map=$( printf "%s" \

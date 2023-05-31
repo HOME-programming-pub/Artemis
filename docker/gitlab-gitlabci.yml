@@ -19,6 +19,8 @@ services:
         prometheus_monitoring['enable'] = false
         gitlab_rails['gitlab_shell_ssh_port'] = 2222
         gitlab_rails['monitoring_whitelist'] = ['0.0.0.0/0']
+        nginx['redirect_http_to_https'] = true
+        nginx['redirect_http_to_https_port'] = 80
         letsencrypt['enable'] = ${SSL_ENABLED}
         letsencrypt['auto_renew_hour'] = "12"
         letsencrypt['auto_renew_minute'] = "30"
