@@ -12,6 +12,8 @@ test-job:
     variables:
         GIT_STRATEGY: none
         MAVEN_OPTS: -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=[yyyy-MM-dd'T'HH:mm:ssX] -Dorg.slf4j.simpleLogger.logFile=${ARTEMIS_BUILD_LOGS_FILE}
+    before_script:
+        - git config --global http.sslCAInfo ${CI_SERVER_TLS_CA_FILE}
     script:
         - git clone --branch ${ARTEMIS_TEST_GIT_BRANCH} ${CI_SERVER_PROTOCOL}://${ARTEMIS_TEST_GIT_USER}:${ARTEMIS_TEST_GIT_TOKEN}@${CI_SERVER_HOST}:${CI_SERVER_PORT}/${CI_PROJECT_NAMESPACE}/${ARTEMIS_TEST_GIT_REPOSITORY_SLUG} .
         - git clone --branch ${ARTEMIS_SUBMISSION_GIT_BRANCH} ${CI_SERVER_PROTOCOL}://${ARTEMIS_TEST_GIT_USER}:${ARTEMIS_TEST_GIT_TOKEN}@${CI_SERVER_HOST}:${CI_SERVER_PORT}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} assignment
@@ -39,6 +41,8 @@ upload-job:
             - $CI_COMMIT_BRANCH == $ARTEMIS_SUBMISSION_GIT_BRANCH
     variables:
         GIT_STRATEGY: none
+    before_script:
+        - keytool -import -trustcacerts -storepass changeit -alias root -file ${CI_SERVER_TLS_CA_FILE} -keystore $JAVA_HOME/jre/lib/security/cacerts -noprompt
     script:
         - cp -r /notification-plugin/* .
         - gradle run
