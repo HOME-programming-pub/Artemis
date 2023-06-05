@@ -13,17 +13,21 @@ test-job:
     GIT_STRATEGY: none
     MAVEN_OPTS: -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=[yyyy-MM-dd'T'HH:mm:ssX] -Dorg.slf4j.simpleLogger.logFile=${ARTEMIS_BUILD_LOGS_FILE}
   before_script:
-    - set -o pipefail
+    - apt update
+    - apt install -y libxrender1 libxtst6 libxi6
     - git config --global http.sslCAInfo ${CI_SERVER_TLS_CA_FILE}
   script:
     - git clone --branch ${ARTEMIS_TEST_GIT_BRANCH} ${CI_SERVER_PROTOCOL}://${ARTEMIS_TEST_GIT_USER}:${ARTEMIS_TEST_GIT_TOKEN}@${CI_SERVER_HOST}:${CI_SERVER_PORT}/${CI_PROJECT_NAMESPACE}/${ARTEMIS_TEST_GIT_REPOSITORY_SLUG} .
     - git clone --branch ${ARTEMIS_SUBMISSION_GIT_BRANCH} ${CI_SERVER_PROTOCOL}://${ARTEMIS_TEST_GIT_USER}:${ARTEMIS_TEST_GIT_TOKEN}@${CI_SERVER_HOST}:${CI_SERVER_PORT}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} assignment
     - export ARTEMIS_NOTIFICATION_SECRET=[hidden] # Workaround for overwriting the secret
     - export ARTEMIS_TEST_GIT_TOKEN=[hidden]
-    - cd structural structural
+    - cd assignment
+    - mvn clean install -DskipTests ${MAVEN_OPTS} && ARTEMIS_BUILD_STATUS="success" || ARTEMIS_BUILD_STATUS="failed"
+    - if [ "${ARTEMIS_BUILD_STATUS}" == "failed" ]; then exit 0; else cd ..; fi
+    - cd structural
     - mvn clean test -B --fail-at-end && ARTEMIS_BUILD_STATUS="success" || ARTEMIS_BUILD_STATUS="failed"
     - if [ "${ARTEMIS_BUILD_STATUS}" == "failed" ]; then exit 0; else cd ..; fi
-    - cd behavior behavior
+    - cd behavior
     - mvn clean test -B --fail-at-end && ARTEMIS_BUILD_STATUS="success" || ARTEMIS_BUILD_STATUS="failed"
   after_script:
     - echo "ARTEMIS_BUILD_STATUS=${ARTEMIS_BUILD_STATUS}" >> .env
@@ -31,22 +35,16 @@ test-job:
     - echo "ARTEMIS_SUBMISSION_GIT_HASH=${CI_COMMIT_SHA}" >> .env
     - echo "ARTEMIS_SUBMISSION_GIT_REPOSITORY_SLUG=${CI_PROJECT_NAME}" >> .env
 
-    - rm -rf results
-    - mkdir results
-    - cp structural/target/surefire-reports/*.xml ${ARTEMIS_TEST_RESULTS_DIR} || true
-    - cp behavior/target/surefire-reports/*.xml${ARTEMIS_TEST_RESULTS_DIR} || true
-    - sed -i 's/[^[:print:]\t]/�/g' ${ARTEMIS_TEST_RESULTS_DIR}/*.xml || true
+    - cat assignment/${ARTEMIS_BUILD_LOGS_FILE} >> ${ARTEMIS_BUILD_LOGS_FILE} || true
 
-    # # FIXME: FILTERING DOES NOT WORK WITH NEWER SYSTEM!
-    # - sed '0,/^\[.*\] \[INFO\] Results:$/d' ${ARTEMIS_BUILD_LOGS_FILE} > ${ARTEMIS_BUILD_LOGS_FILE}.tmp # Remove unused leading logs
-    # - sed 's/\(.*\) \[ERROR\]   \(.*Test\)[>.]\(.*:\)[0-9]*\(.*\)/\1 \[ERROR\] [\2\]:\4/p' ${ARTEMIS_BUILD_LOGS_FILE}.tmp > ${ARTEMIS_BUILD_LOGS_FILE}.tmp2 # Reformat Failed Tests
-    # - sed '/^\[.*\] \[INFO\] BUILD \(.*\)$/q' ${ARTEMIS_BUILD_LOGS_FILE}.tmp2 >> ${ARTEMIS_BUILD_LOGS_FILE} # Remove unsed trailing logs
-    # - mkdir -p ${ARTEMIS_TEST_RESULTS_DIR} # incase the parent directories do not exist
-    # - mv target/surefire-reports/* ${ARTEMIS_TEST_RESULTS_DIR}
+    - mkdir -p ${ARTEMIS_TEST_RESULTS_DIR}
+    - cp structural/target/surefire-reports/*.xml ${ARTEMIS_TEST_RESULTS_DIR} || true
+    - cp behavior/target/surefire-reports/*.xml ${ARTEMIS_TEST_RESULTS_DIR} || true
+    - sed -i 's/[^[:print:]\t]/�/g' ${ARTEMIS_TEST_RESULTS_DIR}/*.xml || true
   artifacts:
     paths:
       - ${ARTEMIS_BUILD_LOGS_FILE}
-      - ${ARTEMIS_TEST_RESULTS_DIR}/*.xml
+      - ${ARTEMIS_TEST_RESULTS_DIR}
     reports:
       dotenv: .env
 
