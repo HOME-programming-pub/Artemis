@@ -20,11 +20,13 @@ test-job:
         - git clone --branch ${ARTEMIS_SUBMISSION_GIT_BRANCH} ${CI_SERVER_PROTOCOL}://${ARTEMIS_TEST_GIT_USER}:${ARTEMIS_TEST_GIT_TOKEN}@${CI_SERVER_HOST}:${CI_SERVER_PORT}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} assignment
         - export ARTEMIS_NOTIFICATION_SECRET=[hidden] # Workaround for overwriting the secret
         - export ARTEMIS_TEST_GIT_TOKEN=[hidden]
-        - ( mvn test -B --fail-at-end &&  echo "ARTEMIS_BUILD_STATUS=success" > .env || echo "ARTEMIS_BUILD_STATUS=failed" > .env ) | tee ${ARTEMIS_BUILD_LOGS_FILE} # FIXME: filter nescecery parts
+        - ( mvn clean test -B --fail-at-end && ARTEMIS_BUILD_STATUS="success" || ARTEMIS_BUILD_STATUS="failed" ) | tee ${ARTEMIS_BUILD_LOGS_FILE}
     after_script:
+        - echo "ARTEMIS_BUILD_STATUS=${ARTEMIS_BUILD_STATUS}" >> .env
         - echo "ARTEMIS_TEST_GIT_HASH=$(git rev-parse HEAD)" >> .env
         - echo "ARTEMIS_SUBMISSION_GIT_HASH=${CI_COMMIT_SHA}" >> .env
         - echo "ARTEMIS_SUBMISSION_GIT_REPOSITORY_SLUG=${CI_PROJECT_NAME}" >> .env
+        # FIXME: FILTERING DOES NOT WORK WITH NEWER SYSTEM!
         - sed '0,/^\[.*\] \[INFO\] Results:$/d' ${ARTEMIS_BUILD_LOGS_FILE} > ${ARTEMIS_BUILD_LOGS_FILE}.tmp # Remove unused leading logs
         - sed 's/\(.*\) \[ERROR\]   \(.*Test\)[>.]\(.*:\)[0-9]*\(.*\)/\1 \[ERROR\] [\2\]:\4/p' ${ARTEMIS_BUILD_LOGS_FILE}.tmp > ${ARTEMIS_BUILD_LOGS_FILE}.tmp2 # Reformat Failed Tests
         - sed '/^\[.*\] \[INFO\] BUILD \(.*\)$/q' ${ARTEMIS_BUILD_LOGS_FILE}.tmp2 >> ${ARTEMIS_BUILD_LOGS_FILE} # Remove unsed trailing logs
