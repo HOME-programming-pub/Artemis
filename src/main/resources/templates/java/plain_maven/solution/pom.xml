@@ -25,6 +25,11 @@
                 <configuration>
                     <source>17</source>
                     <target>17</target>
+                    <showWarnings>true</showWarnings>
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                        <arg>-Werror</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>

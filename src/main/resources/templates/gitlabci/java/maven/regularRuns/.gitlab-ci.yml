@@ -21,10 +21,12 @@ test-job:
         - export ARTEMIS_NOTIFICATION_SECRET=[hidden] # Workaround for overwriting the secret
         - export ARTEMIS_TEST_GIT_TOKEN=[hidden]
         - cd assignment
-        - mvn clean install -DskipTests ${MAVEN_OPTS} && ARTEMIS_BUILD_STATUS="success" || ARTEMIS_BUILD_STATUS="failed"
+        - mvn clean install -B -DskipTests ${MAVEN_OPTS} && ARTEMIS_BUILD_STATUS="success" || ARTEMIS_BUILD_STATUS="failed"
         - if [ "${ARTEMIS_BUILD_STATUS}" == "failed" ]; then exit 0; else cd ..; fi
         - mvn clean test -B --fail-at-end ${MAVEN_OPTS} && ARTEMIS_BUILD_STATUS="success" || ARTEMIS_BUILD_STATUS="failed"
     after_script:
+        - ARTEMIS_BUILD_STATUS="${ARTEMIS_BUILD_STATUS:-success}" # Workaround for runs without tests
+
         - echo "ARTEMIS_BUILD_STATUS=${ARTEMIS_BUILD_STATUS}" >> .env
         - echo "ARTEMIS_TEST_GIT_HASH=$(git rev-parse HEAD)" >> .env
         - echo "ARTEMIS_SUBMISSION_GIT_HASH=${CI_COMMIT_SHA}" >> .env
