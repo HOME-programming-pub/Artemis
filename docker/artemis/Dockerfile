@@ -53,14 +53,14 @@ FROM ${WAR_FILE_STAGE} as war_file
 FROM docker.io/library/eclipse-temurin:17-jdk as runtime
 
 # default path of the trusted certificate files
-ARG CERT_PATH="/opt/artemis/certs"
+# ARG CERT_PATH="/opt/artemis/certs"
 
-WORKDIR ${CERT_PATH}
+# WORKDIR ${CERT_PATH}
 
-COPY docker/nginx/certs/artemis-nginx.pem artemis-nginx.crt
+# COPY docker/nginx/certs/artemis-nginx.pem artemis-nginx.crt
 
 # add nginx as a trusted certifiacte
-RUN keytool -trustcacerts -keystore cacerts -storepass changeit -importcert -alias artemis-nginx -file artemis-nginx.crt -noprompt
+# RUN keytool -trustcacerts -keystore cacerts -storepass changeit -importcert -alias artemis-nginx -file artemis-nginx.crt -noprompt
 
 #default path of the built .war files
 ARG WAR_FILE_PATH="/opt/artemis/build/libs"
@@ -109,8 +109,8 @@ CMD [ "java", \
   "-Dfile.encoding=UTF-8", \
   "-Dsun.jnu.encoding=UTF-8", \
   "-Djava.security.egd=file:/dev/./urandom", \
-  "-Djavax.net.ssl.trustStore=/opt/artemis/certs/cacerts", \
-  "-Djavax.net.ssl.trustStorePassword=changeit", \
+  # "-Djavax.net.ssl.trustStore=/opt/artemis/certs/cacerts", \
+  # "-Djavax.net.ssl.trustStorePassword=changeit", \
   "-Xmx5120m", \
   "-Xms2560m", \
   "--add-modules", "java.se", \

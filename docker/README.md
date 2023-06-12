@@ -16,14 +16,14 @@ docker run --rm -v ${PWD}/docker/nginx/certs:/certs $(docker build -q docker/ngi
 
 The following command starts GitLab and its Runner container which is needed to generate an Access Token for Artemis.
 ```bash
-docker compose -f docker/gitlab-gitlabci.yml --env-file docker/gitlab/gitlab-gitlabci.env up --build -d
+docker compose -f docker/gitlab-gitlabci.yml --env-file docker/.env up --build -d
 ```
 
 ### Setup
 
 To generate the token, you can etiher do it via the GitLab API using your webbrowser, or use this setpscript, which uses the default configuration we need.
 ```bash
-docker compose -f docker/gitlab-gitlabci.yml exec gitlab ./setup.sh >> docker/.env
+docker compose -f docker/gitlab-gitlabci.yml --env-file docker/gitlab/gitlab-gitlabci.env exec gitlab ./setup.sh
 ```
 
 The copy and paste the output (`ARTEMIS_ACCESS_TOKEN`) into `docker/.env`.
@@ -106,3 +106,21 @@ docker compose -f docker/gitlab-gitlabci.yml exec gitlab-runner ./register.sh
 To test if everything works check [Artemis](https://artemis.hs-merseburg.de) or [GitLab](https://gitlab.artemis.hs-merseburg.de).
 
 (You might need to edit yor `hosts` file to redirect artemis and gitlab to localhost or the IP of the NGINX container.)
+
+## Making everything ready
+
+Once all services are running and tested, there is just one more step to make sure all services are started correctly after a reboot.
+This step is neccessary because the order to start the service is really important and can not be changed.
+
+Simply we need to all services:
+
+```bash
+docker stop `docker ps -a -q`
+```
+
+And then start them with:
+
+```bash
+cd docker
+docker compose --env-file .env up -d
+```

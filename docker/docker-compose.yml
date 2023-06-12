@@ -5,22 +5,57 @@
 # this links to /docker/artemis-prod-mysql.yml which is the default artemis production docker compose setup
 
 services:
-    artemis-app:
+    gitlab:
         extends:
-            file: ./artemis-prod-mysql.yml
-            service: artemis-app
+            file: ./gitlab-gitlabci.yml
+            service: gitlab
+
+    gitlab-runner:
+        extends:
+            file: ./gitlab-gitlabci.yml
+            service: gitlab-runner
+        depends_on:
+            gitlab:
+                condition: service_started
 
     mysql:
         extends:
             file: ./artemis-prod-mysql.yml
             service: mysql
+        depends_on:
+            gitlab:
+                condition: service_healthy
+
+    artemis:
+        extends:
+            file: ./artemis-prod-mysql.yml
+            service: artemis
+        depends_on:
+            mysql:
+                condition: service_started
 
     nginx:
         extends:
             file: ./artemis-prod-mysql.yml
             service: nginx
-
+        depends_on:
+            artemis:
+                condition: service_started
 networks:
     artemis:
         driver: "bridge"
         name: artemis
+
+volumes:
+    artemis-gitlab-data:
+        name: artemis-gitlab-data
+    artemis-gitlab-logs:
+        name: artemis-gitlab-logs
+    artemis-gitlab-config:
+        name: artemis-gitlab-config
+    artemis-gitlabci-runner-config:
+        name: artemis-gitlabci-runner-config
+    artemis-data:
+        name: artemis-data
+    artemis-mysql-data:
+        name: artemis-mysql-data

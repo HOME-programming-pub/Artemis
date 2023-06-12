@@ -6,7 +6,6 @@ services:
             dockerfile: docker/gitlab/Dockerfile
             network: host
         platform: linux/amd64
-        pull_policy: build
         volumes:
             - artemis-gitlab-data:/var/opt/gitlab
             - artemis-gitlab-logs:/var/log/gitlab
@@ -15,7 +14,17 @@ services:
             - /etc/ssl/certs_genh/artemis_hs-merseburg_de.pem:/etc/gitlab/ssl/gitlab.artemis.hs-merseburg.de.crt
             - /etc/ssl/artemis.hs-merseburg.de-key.pem:/etc/gitlab/ssl/gitlab.artemis.hs-merseburg.de.key
         environment:
-            GITLAB_OMNIBUS_CONFIG: "prometheus_monitoring['enable'] = false; gitlab_rails['gitlab_shell_ssh_port'] = 2222; gitlab_rails['monitoring_whitelist'] = ['0.0.0.0/0']"
+            GITLAB_OMNIBUS_CONFIG: |
+                external_url "${GIT_SERVER_NAME}"
+                prometheus_monitoring['enable'] = false
+                gitlab_rails['gitlab_shell_ssh_port'] = 2222
+                gitlab_rails['monitoring_whitelist'] = ['0.0.0.0/0']
+                nginx['redirect_http_to_https'] = true
+                nginx['redirect_http_to_https_port'] = 80
+                letsencrypt['enable'] = ${SSL_ENABLED}
+                letsencrypt['auto_renew_hour'] = "12"
+                letsencrypt['auto_renew_minute'] = "30"
+                letsencrypt['auto_renew_day_of_month'] = "*/7"
             GITLAB_ROOT_PASSWORD:
         # expose the ports to make them reachable docker internally even if the external port mapping changes
         expose:
@@ -32,11 +41,17 @@ services:
             # - artemis
         hostname: gitlab.artemis
         extra_hosts:
-            - "gitlab-runner.artemis:172.17.0.2"
-            - "gitlab.artemis:172.17.0.3"
+            - "gitlab.artemis:172.17.0.2"
+            - "gitlab-runner.artemis:172.17.0.3"
             - "mysql.artemis:172.17.0.4"
             - "main.artemis:172.17.0.5"
             - "nginx.artemis:172.17.0.6"
+            - "artemis.hs-merseburg.de:172.17.0.6"
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://127.0.0.1"]
+            interval: 30s
+            timeout: 10s
+            retries: 5
 
 networks:
     artemis:
