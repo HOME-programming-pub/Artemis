@@ -15,8 +15,8 @@ services:
         ports:
             - "127.0.0.1:3306:3306"
         # expose the port to make it reachable docker internally even if the external port mapping changes
-        expose:
-            - "3306"
+        # expose:
+        #     - "3306"
         command: mysqld --lower_case_table_names=1 --skip-ssl --character_set_server=utf8mb4 --collation-server=utf8mb4_unicode_ci --explicit_defaults_for_timestamp
         # mbind: Operation not permitted workaround for docker compose (see https://github.com/docker-library/mysql/issues/303)
         cap_add:
@@ -28,12 +28,19 @@ services:
             retries: 30
             start_period: 300s
         hostname: mysql
+        network_mode: bridge
         networks:
-            - artemis
+            # - artemis
+        extra_hosts:
+            - "gitlab-runner.artemis:172.17.0.2"
+            - "gitlab.artemis:172.17.0.3"
+            - "mysql.artemis:172.17.0.4"
+            - "main.artemis:172.17.0.5"
+            - "nginx.artemis:172.17.0.6"
 
 networks:
     artemis:
-        driver: "bridge"
+        driver: bridge
         name: artemis
 
 volumes:

@@ -8,6 +8,7 @@ services:
     extends:
       file: ./gitlab.yml
       service: gitlab
+    restart: always
     volumes:
       - artemis-gitlab-data:/var/opt/gitlab
       - artemis-gitlab-logs:/var/log/gitlab
@@ -27,21 +28,13 @@ services:
         letsencrypt['auto_renew_day_of_month'] = "*/7"
     env_file:
       - ./gitlab/gitlab-gitlabci.env
-    ports:
-      - "2222:22"
-      - "8081:80"
-      - "1443:443"
-    # expose the ports to make them reachable docker internally even if the external port mapping changes
-    expose:
-      - "22"
-      - "8081"
-      - "1443"
     shm_size: "256m"
 
   gitlab-runner:
     extends:
       file: ./gitlabci.yml
       service: gitlab-runner
+    restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/local/bin/docker:/usr/bin/docker
@@ -51,9 +44,9 @@ services:
       - ./gitlab/gitlab-gitlabci.env
 
 networks:
-  artemis:
-    driver: "bridge"
-    name: artemis
+    artemis:
+        name: artemis
+        driver: bridge
 
 volumes:
   artemis-gitlab-data:

@@ -7,6 +7,7 @@ services:
         image: ghcr.io/ls1intum/artemis
         build:
             context: ..
+            network: host
             dockerfile: docker/artemis/Dockerfile
             # pull: true
             target: runtime
@@ -31,17 +32,24 @@ services:
             interval: 1s
         # expose the port to make it reachable docker internally even if the external port mapping changes
         ports:
-            - "8080:80"
+            - "127.0.0.1:8080:80"
         # expose the ports to make them reachable docker internally even if the external port mapping changes
-        expose:
-            - "80"
+        # expose:
+        #     - "80"
         hostname: artemis
+        network_mode: bridge
         networks:
-            - artemis
+            # - artemis
+        extra_hosts:
+            - "gitlab-runner.artemis:172.17.0.2"
+            - "gitlab.artemis:172.17.0.3"
+            - "mysql.artemis:172.17.0.4"
+            - "main.artemis:172.17.0.5"
+            - "nginx.artemis:172.17.0.6"
 
 networks:
     artemis:
-        driver: "bridge"
+        driver: bridge
         name: artemis
 
 volumes:

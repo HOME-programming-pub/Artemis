@@ -10,7 +10,9 @@ services:
         depends_on:
             mysql:
                 condition: service_healthy
-        restart: on-failure:3
+        # restart: on-failure:3
+        restart: always
+
         # volumes:
         #     - ./.docker-data/artemis-data:/opt/artemis/data
 
@@ -18,7 +20,8 @@ services:
         extends:
             file: ./mysql.yml
             service: mysql
-        restart: on-failure:3
+        # restart: on-failure:3
+        restart: always
         # volumes:
         #     - ./.docker-data/artemis-mysql-data:/var/lib/mysql
 
@@ -30,21 +33,12 @@ services:
         depends_on:
             artemis:
                 condition: service_started
-        restart: on-failure:3
-
-    # TODO: not needed for real production
-    mail:
-        image: djfarrelly/maildev
-        container_name: artemis-mail
-        ports:
-            - "1080:80"
-            - "25:25"
-        networks:
-            - artemis
+        restart: always
+        # restart: on-failure:3
 
 networks:
     artemis:
-        driver: "bridge"
+        driver: bridge
         name: artemis
 
 volumes:

@@ -24,8 +24,10 @@ services:
             - ./nginx/nginx_502.html:/usr/share/nginx/html/502.html:ro
             - ./nginx/70-artemis-setup.sh:/docker-entrypoint.d/70-artemis-setup.sh
             # TODO: move the certs to a place for testing in cypress and/or development envs
-            - ./nginx/certs/artemis-nginx.pem:/certs/fullchain.pem:ro
-            - ./nginx/certs/artemis-nginx-key.pem:/certs/priv_key.pem:ro
+            # - ./nginx/certs/artemis-nginx.pem:/certs/fullchain.pem:ro
+            # - ./nginx/certs/artemis-nginx-key.pem:/certs/priv_key.pem:ro
+            - /etc/ssl/certs_genh/artemis_hs-merseburg_de.pem:/certs/fullchain.pem:ro
+            - /etc/ssl/artemis.hs-merseburg.de-key.pem:/certs/priv_key.pem:ro
             #- ./pki:/etc/pki/nginx:ro
             #- ./defaults/templates:/etc/nginx/templates:ro
             #- ./defaults/nginx.conf:/etc/nginx/nginx.conf:ro
@@ -33,22 +35,29 @@ services:
             #- ./defaults/ssl.conf:/etc/nginx/ssl.conf:ro
             #- ./defaults/dhparam.pem:/etc/nginx/dhparam.pem:ro
         ports:
-            - "80:80"
-            - "443:443"
+            - "127.0.0.1:80:80"
+            - "127.0.0.1:443:443"
         # expose the port to make it reachable docker internally even if the external port mapping changes
-        expose:
-            - "80"
-            - "443"
+        # expose:
+        #     - "80"
+        #     - "443"
         healthcheck:
             test: service nginx status || exit 1
             start_period: 60s
+        network_mode: bridge
         networks:
-            artemis:
-                aliases:
-                    - artemis.hs-merseburg.de
-                    - gitlab.artemis.hs-merseburg.de
+            # artemis:
+            #     aliases:
+            #         - artemis.hs-merseburg.de
+            #         - gitlab.artemis.hs-merseburg.de
+        extra_hosts:
+            - "gitlab-runner.artemis:172.17.0.2"
+            - "gitlab.artemis:172.17.0.3"
+            - "mysql.artemis:172.17.0.4"
+            - "main.artemis:172.17.0.5"
+            - "nginx.artemis:172.17.0.6"
 
 networks:
     artemis:
-        driver: "bridge"
+        driver: bridge
         name: artemis

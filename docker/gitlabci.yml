@@ -3,29 +3,36 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 services:
-  gitlab-runner:
-    image: docker.io/gitlab/gitlab-runner:latest
-    pull_policy: always
-    container_name: artemis-gitlab-runner
-    platform: linux/amd64
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /usr/local/bin/docker:/usr/bin/docker
-      - artemis-gitlabci-runner-config:/etc/gitlab-runner
-      - ./nginx/certs/rootCA.pem:/etc/gitlab-runner/certs/gitlab.artemis.hs-merseburg.de.crt
-      - ./nginx/certs/rootCA.pem:/etc/gitlab-runner/certs/artemis.hs-merseburg.de.crt
-      - ./nginx/certs/rootCA.pem:/etc/gitlab/trusted-certs/gitlab.artemis.hs-merseburg.de.crt
-    env_file:
-      - ./gitlab/gitlab-gitlabci.env
-    hostname: 'gitlab-runner'
-    networks:
-      - artemis
+    gitlab-runner:
+        image: docker.io/gitlab/gitlab-runner:latest
+        pull_policy: always
+        container_name: artemis-gitlab-runner
+        platform: linux/amd64
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - /usr/local/bin/docker:/usr/bin/docker
+          - artemis-gitlabci-runner-config:/etc/gitlab-runner
+          - ./nginx/certs/rootCA.pem:/etc/gitlab-runner/certs/gitlab.artemis.hs-merseburg.de.crt
+          - ./nginx/certs/rootCA.pem:/etc/gitlab-runner/certs/artemis.hs-merseburg.de.crt
+          - ./nginx/certs/rootCA.pem:/etc/gitlab/trusted-certs/gitlab.artemis.hs-merseburg.de.crt
+        env_file:
+          - ./gitlab/gitlab-gitlabci.env
+        network_mode: bridge
+        networks:
+            # - artemis
+        hostname: gitlab-runner
+        extra_hosts:
+            - "gitlab-runner.artemis:172.17.0.2"
+            - "gitlab.artemis:172.17.0.3"
+            - "mysql.artemis:172.17.0.4"
+            - "main.artemis:172.17.0.5"
+            - "nginx.artemis:172.17.0.6"
 
 networks:
-  artemis:
-    driver: "bridge"
-    name: artemis
+    artemis:
+        name: artemis
+        driver: bridge
 
 volumes:
-  artemis-gitlabci-runner-config:
-    name: artemis-gitlabci-runner-config
+    artemis-gitlabci-runner-config:
+        name: artemis-gitlabci-runner-config
