@@ -37,7 +37,7 @@ services:
             - "127.0.0.1:1443:443"
         network_mode: bridge
         # networks:
-        networks:
+        # networks:
             # - artemis
         hostname: gitlab.artemis
         extra_hosts:
@@ -53,10 +53,10 @@ services:
             timeout: 10s
             retries: 5
 
-networks:
-    artemis:
-        name: artemis
-        driver: bridge
+# networks:
+#     artemis:
+#         name: artemis
+#         driver: bridge
 
 volumes:
     artemis-gitlab-data:

@@ -29,7 +29,7 @@ services:
             start_period: 300s
         hostname: mysql.artemis
         network_mode: bridge
-        networks:
+        # networks:
             # - artemis
         extra_hosts:
             - "gitlab.artemis:172.17.0.2"
@@ -38,10 +38,10 @@ services:
             - "main.artemis:172.17.0.5"
             - "nginx.artemis:172.17.0.6"
 
-networks:
-    artemis:
-        driver: bridge
-        name: artemis
+# networks:
+#     artemis:
+#         driver: bridge
+#         name: artemis
 
 volumes:
     artemis-mysql-data:

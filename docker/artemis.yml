@@ -38,7 +38,7 @@ services:
         #     - "80"
         hostname: main.artemis
         network_mode: bridge
-        networks:
+        # networks:
             # - artemis
         extra_hosts:
             - "gitlab.artemis:172.17.0.2"
@@ -48,10 +48,10 @@ services:
             - "nginx.artemis:172.17.0.6"
             - "gitlab.artemis.hs-merseburg.de:172.17.0.6"
 
-networks:
-    artemis:
-        driver: bridge
-        name: artemis
+# networks:
+#     artemis:
+#         driver: bridge
+#         name: artemis
 
 volumes:
     artemis-data:

@@ -45,7 +45,7 @@ services:
             test: service nginx status || exit 1
             start_period: 60s
         network_mode: bridge
-        networks:
+        # networks:
             # artemis:
             #     aliases:
             #         - artemis.hs-merseburg.de
@@ -57,7 +57,7 @@ services:
             - "main.artemis:172.17.0.5"
             - "nginx.artemis:172.17.0.6"
 
-networks:
-    artemis:
-        driver: bridge
-        name: artemis
+# networks:
+#     artemis:
+#         driver: bridge
+#         name: artemis

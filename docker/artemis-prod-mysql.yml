@@ -36,10 +36,10 @@ services:
         restart: always
         # restart: on-failure:3
 
-networks:
-    artemis:
-        driver: bridge
-        name: artemis
+# networks:
+#     artemis:
+#         driver: bridge
+#         name: artemis
 
 volumes:
     artemis-data:
