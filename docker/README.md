@@ -35,7 +35,7 @@ docker run --rm -v ${PWD}/docker/nginx/certs:/certs $(docker build -q docker/ngi
 
 The following command starts GitLab and its Runner container which is needed to generate an Access Token for Artemis.
 ```bash
-docker-compose -f docker/gitlab-gitlabci.yml --env-file docker/.env up --build -d
+docker compose -f docker/gitlab-gitlabci.yml --env-file docker/.env up --build -d
 ```
 
 ### Setup
@@ -70,7 +70,7 @@ set -a && . docker/.env && set +a; envsubst < docker/artemis/config/prod-applica
 Before we can build Artemis, depending on your hosts resources you need to stop the running containers.
 
 ```bash
-docker-compose -f docker/gitlab-gitlabci.yml stop
+docker compose -f docker/gitlab-gitlabci.yml stop
 ```
 #### Build Locally First
 
@@ -97,16 +97,16 @@ rsync -r build/libs/*.war root@artemis.hs-merseburg.de:/root/Artemis/build/libs/
 
 Now we can either use this repository to build artemis, or we can build artemis locally, `scp` it into `build/libs/Artemis.war`, which is the preconfigured way, to change it edit `docker/artemis.yml` and change the build argument `WAR_FILE_STAGE` to `builder`.
 ```bash
-DOCKER_BUILDKIT=1 docker-compose -f docker/artemis-prod-mysql.yml build --no-cache artemis
+DOCKER_BUILDKIT=1 docker compose -f docker/artemis-prod-mysql.yml build --no-cache artemis
 ```
 
 ## Start
 
 With everything build and configured we can now start GitLab and its Runner and once they are started up we can start the Database, MailServer, Artemis and NGINX.
 ```bash
-docker-compose -f docker/gitlab-gitlabci.yml --env-file docker/.env up -d
+docker compose -f docker/gitlab-gitlabci.yml --env-file docker/.env up -d
 
-DOCKER_BUILDKIT=1 docker-compose -f docker/artemis-prod-mysql.yml up -d
+DOCKER_BUILDKIT=1 docker compose -f docker/artemis-prod-mysql.yml up -d
 ```
 
 ### Runner 
@@ -116,7 +116,7 @@ DOCKER_BUILDKIT=1 docker-compose -f docker/artemis-prod-mysql.yml up -d
 We also need atleast one Runner Instance to run tests. 
 You can run this command multiple times, to create multiple runners if needed. 
 ```bash
-docker-compose -f docker/gitlab-gitlabci.yml exec gitlab-runner ./register.sh
+docker compose -f docker/gitlab-gitlabci.yml exec gitlab-runner ./register.sh
 ```
 > You might need to run this twice, the first attempt might fail, but the second works.
 
@@ -140,5 +140,5 @@ docker stop `docker ps -a -q`
 And then start them with:
 
 ```bash
-cd docker && docker-compose --env-file .env up -d && cd ..
+cd docker && docker compose --env-file .env up -d && cd ..
 ```

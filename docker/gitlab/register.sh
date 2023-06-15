@@ -23,8 +23,8 @@ gitlab-runner register \
   --locked="false" \
   --access-level="not_protected" \
   --docker-network-mode bridge \
-  --docker-extra-hosts "artemis.hs-merseburg.de:172.18.0.6" \
-  --docker-extra-hosts "gitlab.artemis.hs-merseburg.de:172.18.0.6"
+  --docker-extra-hosts "artemis.hs-merseburg.de:$DOCKER_NETWORK.6" \
+  --docker-extra-hosts "gitlab.artemis.hs-merseburg.de:$DOCKER_NETWORK.6"
 
 # If a custom netowkr is possible, use it instead of the bridge
 # with that the extra-hosts will change/be useless and can be removed

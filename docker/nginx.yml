@@ -51,11 +51,11 @@ services:
             #         - artemis.hs-merseburg.de
             #         - gitlab.artemis.hs-merseburg.de
         extra_hosts:
-            - "gitlab.artemis:172.18.0.2"
-            - "gitlab-runner.artemis:172.18.0.3"
-            - "mysql.artemis:172.18.0.4"
-            - "main.artemis:172.18.0.5"
-            - "nginx.artemis:172.18.0.6"
+            - "gitlab.artemis:${DOCKER_NETWORK}.2"
+            - "gitlab-runner.artemis:${DOCKER_NETWORK}.3"
+            - "mysql.artemis:${DOCKER_NETWORK}.4"
+            - "main.artemis:${DOCKER_NETWORK}.5"
+            - "nginx.artemis:${DOCKER_NETWORK}.6"
 
 # networks:
 #     artemis:
