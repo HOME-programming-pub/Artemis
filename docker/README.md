@@ -3,6 +3,25 @@
 An overview of all possible setups can be found in the docs at `docs/dev/setup.rst` in the section
 `Alternative: Docker Compose Setup`.
 
+## Usefull note for future maintainers!
+
+> HoMe Artemis ONLY
+
+If the firewall rules get improved to allow docker network interfaces to access the internet (via the proxy), then the following changes NEED to be done.
+
+Currently we export hosts to access containers from another, if we can use a custom network, this options is useless and can be replaced.
+(Most of the replacements are already existent, they just need to be uncommented and the useless options can be deleted.)
+
+### Files that are impaced:
+> maybe a few more but those are the files where it is 100% needed to be changed.
+
+ - artemis.yml
+ - gitlab.yml
+ - gitlabci.yml
+ - mysql.yml
+ - nginx.yml
+ - gitlab/register.sh
+
 ## Certificates
 
 To generate new Certificates yo can use the following command, lateron using a real certifacte should be better!
@@ -121,6 +140,5 @@ docker stop `docker ps -a -q`
 And then start them with:
 
 ```bash
-cd docker
-docker-compose --env-file .env up -d
+cd docker && docker-compose --env-file .env up -d && cd ..
 ```
