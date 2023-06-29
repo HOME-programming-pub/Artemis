@@ -16,7 +16,7 @@ services:
             service: gitlab-runner
         depends_on:
             gitlab:
-                condition: service_started
+                condition: service_healthy
 
     mysql:
         extends:
