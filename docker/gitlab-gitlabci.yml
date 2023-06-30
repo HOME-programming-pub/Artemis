@@ -29,10 +29,10 @@ services:
     env_file:
       - ./gitlab/gitlab-gitlabci.env
 
-# networks:
-#     artemis:
-#         name: artemis
-#         driver: bridge
+networks:
+    artemis:
+        name: artemis
+        driver: bridge
 
 volumes:
   artemis-gitlab-data:

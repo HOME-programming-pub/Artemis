@@ -2,12 +2,15 @@
 
 GITLAB_API_URL="https://127.0.0.1/api/"
 
+
 # An Array of the Values which are used to create a new Access token via script instead of the GUI
 export map=$( printf "%s" \
-  "User.find_by_username('$GITLAB_ROOT_USER').personal_access_tokens.create(scopes: [:api, :read_user, :read_api, :read_repository, :write_repository, :sudo], name: 'Artemis Admin Token'); " \
+  "User.find_by_username('$GITLAB_ROOT_USER').personal_access_tokens.create(scopes: [:api, :read_user, :read_api, :read_repository, :write_repository, :sudo], name: 'Artemis Admin Token', expires_at: 365.days.from_now); " \
   "token.set_token('$GITLAB_ACCESS_TOKEN'); " \
   "token.save!" \
 )
+
+gitlab-rails runner "PersonalAccessToken.find_by_token('$GITLAB_ACCESS_TOKEN').revoke!"
 
 # Create the Admin Access Token
 gitlab-rails runner "token = $map"

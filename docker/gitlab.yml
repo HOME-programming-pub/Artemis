@@ -11,8 +11,8 @@ services:
             - artemis-gitlab-logs:/var/log/gitlab
             - artemis-gitlab-config:/etc/gitlab
             - ./gitlab/setup.sh:/setup.sh
-            - /etc/ssl/certs_genh/artemis_hs-merseburg_de.pem:/etc/gitlab/ssl/gitlab.artemis.hs-merseburg.de.crt
-            - /etc/ssl/artemis.hs-merseburg.de-key.pem:/etc/gitlab/ssl/gitlab.artemis.hs-merseburg.de.key
+            - ./nginx/certs/artemis_hs-merseburg_de.pem:/etc/gitlab/ssl/gitlab.artemis.hs-merseburg.de.crt
+            - ./nginx/certs/artemis.hs-merseburg.de-key.pem:/etc/gitlab/ssl/gitlab.artemis.hs-merseburg.de.key
         environment:
             GITLAB_OMNIBUS_CONFIG: |
                 external_url "${GIT_SERVER_NAME}"
@@ -27,36 +27,25 @@ services:
                 letsencrypt['auto_renew_day_of_month'] = "*/7"
             GITLAB_ROOT_PASSWORD:
         # expose the ports to make them reachable docker internally even if the external port mapping changes
+        ports:
+            - "2222:22"
+            - "8081:80"
         expose:
             - "22"
             - "80"
-            - "443"
-        ports:
-            - "127.0.0.1:2222:22"
-            - "127.0.0.1:8081:80"
-            - "127.0.0.1:1443:443"
-        network_mode: bridge
-        # networks:
-        # networks:
-            # - artemis
+        networks:
+            - artemis
         hostname: gitlab.artemis
-        extra_hosts:
-            - "gitlab.artemis:${DOCKER_NETWORK}.2"
-            - "gitlab-runner.artemis:${DOCKER_NETWORK}.3"
-            - "mysql.artemis:${DOCKER_NETWORK}.4"
-            - "main.artemis:${DOCKER_NETWORK}.5"
-            - "nginx.artemis:${DOCKER_NETWORK}.6"
-            - "artemis.hs-merseburg.de:${DOCKER_NETWORK}.6"
         healthcheck:
             test: ["CMD", "curl", "-f", "http://127.0.0.1"]
             interval: 30s
             timeout: 10s
             retries: 5
 
-# networks:
-#     artemis:
-#         name: artemis
-#         driver: bridge
+networks:
+    artemis:
+        name: artemis
+        driver: bridge
 
 volumes:
     artemis-gitlab-data:

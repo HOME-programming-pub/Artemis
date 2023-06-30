@@ -15,22 +15,14 @@ services:
           - ./nginx/certs/rootCA.pem:/etc/gitlab-runner/certs/gitlab.artemis.hs-merseburg.de.crt
           - ./nginx/certs/rootCA.pem:/etc/gitlab-runner/certs/artemis.hs-merseburg.de.crt
           - ./nginx/certs/rootCA.pem:/etc/gitlab/trusted-certs/gitlab.artemis.hs-merseburg.de.crt
-        network_mode: bridge
-        # networks:
-            # - artemis
+        networks:
+            - artemis
         hostname: gitlab-runner.artemis
-        extra_hosts:
-            - "gitlab.artemis:${DOCKER_NETWORK}.2"
-            - "gitlab-runner.artemis:${DOCKER_NETWORK}.3"
-            - "mysql.artemis:${DOCKER_NETWORK}.4"
-            - "main.artemis:${DOCKER_NETWORK}.5"
-            - "nginx.artemis:${DOCKER_NETWORK}.6"
-            - "gitlab.artemis.hs-merseburg.de:${DOCKER_NETWORK}.6"
 
-# networks:
-#     artemis:
-#         name: artemis
-#         driver: bridge
+networks:
+    artemis:
+        name: artemis
+        driver: bridge
 
 volumes:
     artemis-gitlabci-runner-config:

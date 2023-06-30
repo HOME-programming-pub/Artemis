@@ -39,7 +39,7 @@ The second file uses slightly different variables in case we want `GitLab` to ru
 
 > The idea behind repeating these variables is to keep things simple in case GitLab and Artemis are not running on the same machine, since with a higher user load, more CPU/RAM may be needed for GitLab and the GitLab runners.
 
-### 2.1. Example
+### 2.1 Example
 
 `ARTEMIS_ADMIN_PASSWORD="<artemis-password-50-chars-long>"` means that the variable `ARTEMIS_ADMIN_PASSWORD` should be a password with a maximum length of 50 characters. 
 
@@ -52,11 +52,11 @@ It is possible to use self-signed certificates as explained in the Artemis docum
 
 If possible, we should use real certificates, which must contain `artemis.hs-mersebrg.de` and `gitlab.artemis.hs-merseburg.de`.
 
-Once these certificates have been obtained, they need to be placed in `/etc/ssl/`.
+Once these certificates have been obtained, they need to be placed in `docker/nginx/certs`.
 
 The files and their paths must be as follows
-- artemis_hs-merseburg_de.pem - `/etc/ssl/certs_genh/artemis_hs-merseburg_de.pem`
-- artemis.hs-merseburg.de-key.pem - `/etc/ssl/artemis.hs-merseburg.de-key.pem`
+- artemis_hs-merseburg_de.pem - `docker/nginx/certs/artemis_hs-merseburg_de.pem` - the `CERTIFICATE` file
+- artemis.hs-merseburg.de-key.pem - `docker/nginx/certs/artemis.hs-merseburg.de-key.pem` - the `PRIVATE KEY` file
 
 ## 4. GitLab and GitLab CI (Runners)
 
@@ -64,22 +64,24 @@ In this section we will create and configure the containers for GitLab and GitLa
 The reason we need to start them first is that in order to access the GitLab API from Artemis, an access token needs to be generated.
 And Artemis will run some configurations on startup that require this token, so we need to create this container before we can run the others.
 
-### 4.1. Building and running
+### 4.1 Building and running
 
 The following command will start the two containers with the configuration from `docker/gitlab-gitlabci.yml`.
 The `--build` flag is needed for the `gitlab` service because it uses a modified image from the dockerfile in `docker/gitlab/Dockerfile`:
 
 ```bash
-docker-compose -f docker/gitlab-gitlabci.yml up --build -d
+docker-compose -f docker/gitlab-gitlabci.yml --env-file docker/gitlab/gitlab-gitlabci.env up --build -d
 ```
 
 This command may look like it is stuck, but it is not (if it does not take more than 5 minutes to complete) because it is waiting for the `GitLab` service to be `healthy`, which means it is configured and ready to use.
 
 We need to wait for it to finish as the next step depends on it.
 
-### 4.2. Setup
+After the command finished executing either check the logs if gitlab was configured or wait an additional 30-60 seconds before proceding.
 
-We now need to create the access token for Artemis, in the Artemis documentation there is an example of how to do this manually, but it involves many steps and the need to access the website.
+### 4.2 Setup
+
+We now need to create the access token for Artemis, in the Artemis documentation there is an example of how to do this manually, but it involves many steps and the need to access the website, which is not accessible with the current setup.
 To make it easier, I have prepared a script to run that automatically performs the necessary steps and returns the access token to the terminal.
 
 The script can be found in `docker/gitlab/setup.sh` and should be run as follows
@@ -87,7 +89,9 @@ The script can be found in `docker/gitlab/setup.sh` and should be run as follows
 docker-compose -f docker/gitlab-gitlabci.yml exec gitlab ./setup.sh
 ```
 
-This command may also take some time to run (about 30 seconds) and should return something like the following
+This command may also take some time to run (about 30 seconds) and when running it the first time, it will return a message `undefined method 'revoke!' for nil:NilClass` which can be ignored, since its trying to revoke a token, incase only already exists.
+
+If everything else worked correctly, then the output should return something like the following
 
 ```
 ARTEMIS_ACCESS_TOKEN="glpat-..."
@@ -96,6 +100,10 @@ ARTEMIS_ACCESS_TOKEN="glpat-..."
 This line can be copied from a terminal and added to the end of the `docker/.env` file created earlier.
 
 GitLab is now configured and we can proceed with launching Artemis.
+
+> __WARINGING!__ since the latest version now requires an expiration date (max 365 days) this token will need to be requested again before the current token expires.
+> Simply run this script again to delete the old token and set the new one.
+> Then you need to replace the token inside the `docker/.env` file and execute the step 5.1 again.
 
 ## 5. Artemis
 
@@ -115,7 +123,7 @@ And can be added to the `docker/.env` file (when adding a new variable, it is al
 Once we are done configuring the file, we need to convert it, which requires the tools mentioned in the `Prerequisites` section.
 
 ```bash
-yq -o=props '... comments=""' docker/artemis/application-local.yml | sed 's/^\([a-zA-Z0-9\.\-]*\) = \(. *\)/\U\1\E="\2"/g' | sed -e ':a' -e 's/^\([^=]*\)\-/\1/;t a' | sed -e ':a' -e 's/^\([^=]*\)\./\1_/;t a' > docker/artemis/config/prod-application-local.env.tmp
+yq -o=props '... comments=""' docker/artemis/application-local.yml | sed 's/^\([a-zA-Z0-9\.\-]*\) = \(.*\)/\U\1\E="\2"/g' | sed -e ':a' -e 's/^\([^=]*\)\-/\1/;t a' | sed -e ':a' -e 's/^\([^=]*\)\./\1_/;t a' > docker/artemis/config/prod-application-local.env.tmp
 ```
 
 This command converts the YAML format into the environment variable format, first we convert the nested YAML into concatenated values.
@@ -129,7 +137,7 @@ set -a && . docker/.env && set +a; envsubst < docker/artemis/config/prod-applica
 
 This command exports the environment variables defined in `docker/.env`, with `envsubst` we search for the placeholder variables, if we find a matching environment variable then we replace it with its value and then we save everything in `docker/artemis/config/prod-application-local.env`.
 
-### 5.2. Building
+### 5.2 Building
 
 This is the only step that needs to be done each time a new change is made and should be used by the production server.
 
@@ -154,30 +162,30 @@ To use this new war file, we need to send it to the host using SSH.
 There are two ways to do this, if its the first time we need to create a directory called `build/libs` in the root of the Artemis repository and use
 
 ```bash
-scp build/libs/*.war root@artemis.hs-merseburg.de:/root/Artemis/build/libs/Artemis.war
+scp build/libs/*.war artemis@artemis.hs-merseburg.de:/home/artemis/Artemis/build/libs/Artemis.war
 ```
 
 Or we can use `rsync`, where we do not have to worry about the existing directory:
 
 ```bash
-rsync -r build/libs/*.war root@artemis.hs-merseburg.de:/root/Artemis/build/libs/Artemis.war
+rsync -r build/libs/*.war artemis@artemis.hs-merseburg.de:/home/artemis/Artemis/build/libs/Artemis.war
 ```
 
 > The user and path `root` are the current configuration for the host, but may change in the future.
 
-### 5.3. Building the container
+### 5.3 Building the container
 
 Once the `.WAR` file has been uploaded to the host, we can build the Artemis container using
 
 ```bash
-DOCKER_BUILDKIT=1 docker-compose -f docker/artemis-prod-mysql.yml build --no-cache artemis
+DOCKER_BUILDKIT=1 docker-compose -f docker/artemis.yml build --no-cache
 ```
 
 This container needs build arguments to build the right thing, but this option is not available in older Docker engines, which is why we need a relatively new version of the Docker engine.
 
 It is also not a default option, which is why we need to enable the `DOCKER_BUILDKIT`, at least for the version I was using, maybe in a newer version this is possible by default.
 
-### 5.4. Starting the services
+### 5.4 Starting the services
 
 Now we can finally start everything else we need.
 
@@ -210,3 +218,11 @@ Now everything should be running and working.
 To test if everything is working, check out [Artemis](https://artemis.hs-merseburg.de) or [GitLab](https://gitlab.artemis.hs-merseburg.de).
 
 (You may need to edit your `hosts` file to redirect artemis (artemis.hs-merseburg.de) and gitlab (gitlab.artemis.hs-merseburg.de) to localhost or the IP of the NGINX container if you are testing locally with this setup).
+
+Now only one thing can be used to get all containers synced up at the next reboot:
+
+```bash
+docker stop `docker ps -a -q`
+
+docker-compose -f docker/docker-compose.yml up -d
+```

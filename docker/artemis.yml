@@ -33,28 +33,18 @@ services:
             interval: 1s
         # expose the port to make it reachable docker internally even if the external port mapping changes
         ports:
-            - "127.0.0.1:8080:80"
+            - "8080:80"
         # expose the ports to make them reachable docker internally even if the external port mapping changes
-        # expose:
-        #     - "80"
+        expose:
+            - "80"
         hostname: main.artemis
-        network_mode: bridge
-        # networks:
-            # - artemis
-        extra_hosts:
-            - "gitlab.artemis:${DOCKER_NETWORK}.2"
-            - "gitlab-runner.artemis:${DOCKER_NETWORK}.3"
-            - "mysql.artemis:${DOCKER_NETWORK}.4"
-            - "main.artemis:${DOCKER_NETWORK}.5"
-            - "nginx.artemis:${DOCKER_NETWORK}.6"
-            - "mail.artemis:${DOCKER_NETWORK}.7"
-            - "artemis.hs-merseburg.de:${DOCKER_NETWORK}.6"
-            - "gitlab.artemis.hs-merseburg.de:${DOCKER_NETWORK}.6"
+        networks:
+            - artemis
 
-# networks:
-#     artemis:
-#         driver: bridge
-#         name: artemis
+networks:
+    artemis:
+        driver: bridge
+        name: artemis
 
 volumes:
     artemis-data:

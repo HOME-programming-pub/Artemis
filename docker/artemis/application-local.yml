@@ -115,6 +115,9 @@ management:
     export:
       prometheus:
         enabled: true
+  health:
+    mail:
+      enabled: true
 
 spring:
   devtools:
@@ -142,10 +145,18 @@ spring:
   liquibase:
     contexts: "prod"
   mail:
-    host: "$MAIL_HOST" # TODO: make env
-    port: "$MAIL_PORT" # TODO: make env
-    username: # TODO: add username
-    password: # TODO: add password
+    host: "$MAIL_HOST"
+    port: "$MAIL_PORT"
+    username: "$MAIL_USERNAME"
+    password: "$MAIL_PASSWORD"
+    protocol: smtp
+    tls: true
+    properties.mail.smtp:
+        auth: true
+        starttls:
+            enable: true
+        ssl:
+            trust: "$MAIL_HOST"
   thymeleaf:
     cache: true
 
