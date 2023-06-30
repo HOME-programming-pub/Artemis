@@ -5,11 +5,14 @@
 services:
     gitlab-runner:
         image: docker.io/gitlab/gitlab-runner:latest
+        restart: always
         pull_policy: always
         container_name: artemis-gitlab-runner
         platform: linux/amd64
         volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
+          - type: bind
+            source: ${XDG_RUNTIME_DIR:-/var/run}/docker.sock
+            target: /var/run/docker.sock
           - /usr/local/bin/docker:/usr/bin/docker
           - artemis-gitlabci-runner-config:/etc/gitlab-runner
           - ./nginx/certs/rootCA.pem:/etc/gitlab-runner/certs/gitlab.artemis.hs-merseburg.de.crt

@@ -27,7 +27,7 @@ The tools are
 There are two files that need to be created before we can run the containers for the first time.
 These files contain sensitive data and will never be committed.
 
-1. docker/.env
+1. `docker/.env
 2. `docker/gitlab/gitlab-gitlabci.env`
 
 The first file is used as a global configuration for all containers.

@@ -22,7 +22,9 @@ services:
       gitlab:
         condition: service_healthy
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - type: bind
+        source: ${XDG_RUNTIME_DIR:-/var/run}/docker.sock
+        target: /var/run/docker.sock
       - /usr/local/bin/docker:/usr/bin/docker
       - artemis-gitlabci-runner-config:/etc/gitlab-runner
       - ./gitlab/register.sh:/register.sh
