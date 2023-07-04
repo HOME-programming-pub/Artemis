@@ -11,8 +11,8 @@ services:
             - artemis-gitlab-logs:/var/log/gitlab
             - artemis-gitlab-config:/etc/gitlab
             - ./gitlab/setup.sh:/setup.sh
-            - ./nginx/certs/artemis_hs-merseburg_de.pem:/etc/gitlab/ssl/gitlab.artemis.hs-merseburg.de.crt
-            - ./nginx/certs/artemis.hs-merseburg.de-key.pem:/etc/gitlab/ssl/gitlab.artemis.hs-merseburg.de.key
+            - ./nginx/certs/artemis_hs-merseburg_de.pem:/etc/gitlab/ssl/gitlab-artemis.hs-merseburg.de.crt
+            - ./nginx/certs/artemis.hs-merseburg.de-key.pem:/etc/gitlab/ssl/gitlab-artemis.hs-merseburg.de.key
         environment:
             GITLAB_OMNIBUS_CONFIG: |
                 external_url "${GIT_SERVER_NAME}"
@@ -25,6 +25,7 @@ services:
                 letsencrypt['auto_renew_hour'] = "12"
                 letsencrypt['auto_renew_minute'] = "30"
                 letsencrypt['auto_renew_day_of_month'] = "*/7"
+            GITLAB_SKIP_UNMIGRATED_DATA_CHECK: true
             GITLAB_ROOT_PASSWORD:
         # expose the ports to make them reachable docker internally even if the external port mapping changes
         ports:

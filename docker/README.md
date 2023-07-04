@@ -50,7 +50,7 @@ Make sure you are __NOT__ using any `$` characters as they can/will be interpret
 All services communicate mainly via HTTPS and therefore need the correct certificates.
 It is possible to use self-signed certificates as explained in the Artemis documentation, but each service would need to be modified to allow self-signed certificates, which is a pain to get right.
 
-If possible, we should use real certificates, which must contain `artemis.hs-mersebrg.de` and `gitlab.artemis.hs-merseburg.de`.
+If possible, we should use real certificates, which must contain `artemis.hs-mersebrg.de` and `gitlab-artemis.hs-merseburg.de`.
 
 Once these certificates have been obtained, they need to be placed in `docker/nginx/certs`.
 
@@ -215,9 +215,9 @@ To create another/more runners, just run the command multiple times, depending o
 
 Now everything should be running and working.
 
-To test if everything is working, check out [Artemis](https://artemis.hs-merseburg.de) or [GitLab](https://gitlab.artemis.hs-merseburg.de).
+To test if everything is working, check out [Artemis](https://artemis.hs-merseburg.de) or [GitLab](https://gitlab-artemis.hs-merseburg.de).
 
-(You may need to edit your `hosts` file to redirect artemis (artemis.hs-merseburg.de) and gitlab (gitlab.artemis.hs-merseburg.de) to localhost or the IP of the NGINX container if you are testing locally with this setup).
+(You may need to edit your `hosts` file to redirect artemis (artemis.hs-merseburg.de) and gitlab (gitlab-artemis.hs-merseburg.de) to localhost or the IP of the NGINX container if you are testing locally with this setup).
 
 Now only one thing can be used to get all containers synced up at the next reboot:
 

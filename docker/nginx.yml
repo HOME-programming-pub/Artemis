@@ -49,7 +49,7 @@ services:
             artemis:
                 aliases:
                     - artemis.hs-merseburg.de
-                    - gitlab.artemis.hs-merseburg.de
+                    - gitlab-artemis.hs-merseburg.de
 
 networks:
     artemis:
