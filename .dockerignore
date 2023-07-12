@@ -30,6 +30,7 @@ build/*
 
 # exclude the /docker/.docker-data folders (ALLOW CRT FILES!!!)
 docker/.docker-data
+
 #########################
 # exclude Artemis configs
 #########################
@@ -38,7 +39,7 @@ docker/.docker-data
 /src/main/resources/known_hosts
 
 # exclude the docker files and the /docker/.docker-data folders
-docker/
+# docker/
 
 # files inside of the root directory not needed
 CITATION.cff

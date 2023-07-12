@@ -214,3 +214,6 @@ local-vcs-repos
 ######################
 /src/test/cypress/coverage
 /src/test/cypress/jacoco
+
+!/build/libs/.gitkeep
+/docker/artemis/config/prod-application-local.env
