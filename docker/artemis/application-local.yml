@@ -1,5 +1,6 @@
 # ===================================================================
 # Artemis specific properties
+# (cf. https://artemis-platform.readthedocs.io/en/6.3.3/dev/setup.html#server-setup)
 # ===================================================================
 
 artemis:
