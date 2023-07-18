@@ -8,7 +8,7 @@ RUN git clone https://github.com/FiloSottile/mkcert . && go build -ldflags "-X m
 FROM alpine
 COPY --from=builder /go/mkcert/mkcert /usr/local/bin/mkcert
 RUN adduser -D mkcertuser
-RUN apk add nss && mkdir /certs
+RUN apk add nss && mkdir /gen
 USER mkcertuser
-WORKDIR /certs
-VOLUME /certs
+WORKDIR /gen
+VOLUME /gen
